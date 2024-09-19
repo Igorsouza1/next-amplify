@@ -7,19 +7,29 @@ specifies that any unauthenticated user can "create", "read", "update",
 and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
-  Todo: a
-    .model({
-      content: a.string(),
-    })
-    .authorization((allow) => [allow.guest()]),
-});
+  Post: a.model({
+    title: a.string().required(),
+    comments: a.hasMany('Comment', 'postId'),  // 'postId' é a chave estrangeira no modelo Comment
+    owner: a.string().authorization(allow => [allow.owner().to(['read', 'delete'])]),
+  }).authorization(allow => [allow.publicApiKey().to(["read"]), allow.owner()]),
+
+  Comment: a.model({
+    postId: a.string().required(),
+    content: a.string().required(),
+    post: a.belongsTo('Post', 'postId'),  // 'postId' é a chave estrangeira
+    owner: a.string().authorization(allow => [allow.owner().to(['read', 'delete'])]),
+  })
+}).authorization(allow => [allow.publicApiKey().to(["read"]), allow.owner()])
 
 export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'iam',
+    defaultAuthorizationMode: 'apiKey',
+    apiKeyAuthorizationMode: {
+      expiresInDays: 30,
+    },
   },
 });
 
