@@ -24,7 +24,8 @@ export const isAuthenticated = async (): Promise<boolean> => {
             try {
                 const user = await getCurrentUser(contextSpec);
                 return !!user;
-            } catch (E) {
+            } catch (error) {
+                console.log('error ', error)
                 return false;
             }
         }
