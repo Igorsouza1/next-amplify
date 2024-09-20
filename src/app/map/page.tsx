@@ -1,6 +1,5 @@
-import MapLeaflet from "@/components/mapleaft/mapleaft";
+
 import { Sidebar } from "@/components/sidebar/sidebar";
-import { cookieBasedClient } from "@/utils/amplify-utils";
 import dynamic from "next/dynamic";
 
 
