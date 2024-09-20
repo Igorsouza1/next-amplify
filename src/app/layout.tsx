@@ -3,6 +3,7 @@ import "./globals.css";
 import Auth from "@/components/auth/auth";
 import NavBar from "@/components/Navbar/Navbar";
 import { isAuthenticated } from "@/utils/amplify-utils";
+import { Toaster } from "@/components/ui/toaster";
 
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default async function RootLayout({
         <Auth>
           
           {children}
+          <Toaster />
 
         </Auth>
       </body>
