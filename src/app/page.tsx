@@ -10,8 +10,6 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { signIn, confirmSignIn } from "aws-amplify/auth";
-import { useEffect, useState } from "react";
-import { Hub } from "aws-amplify/utils";
 
 
 type loginData = {
