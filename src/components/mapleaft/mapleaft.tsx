@@ -21,6 +21,7 @@ const MapLeaflet = () => {
       try {
         // Obter os dados de geometria
         const geometryData = await getInitialGeometry();
+        console.log("MapLeaflet: Dados de geometria obtidos:", geometryData);
 
         // Verificar se o array de geometria possui dados
         if (geometryData.length > 0) {
