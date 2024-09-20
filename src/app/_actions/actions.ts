@@ -15,3 +15,12 @@ export async function createPost(formData: FormData) {
     console.log('data created ', data)
     redirect(`/`)
 }
+
+
+export async function getInitialGeometry() {
+    const {data: InitialGeometry} = await cookieBasedClient.models.InitialGeometry.list({
+        selectionSet: ['name', 'geometry'],
+        authMode: 'userPool'
+      }); 
+      return InitialGeometry;
+}

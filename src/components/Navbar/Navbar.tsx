@@ -10,7 +10,7 @@ import { Hub } from "aws-amplify/utils";
 
 export default function NavBar({ isSignedIn }: { isSignedIn: boolean }) {
     const [authCheck, setAuthCheck] = useState(isSignedIn);
-  console.log("isSignedIn", isSignedIn);
+  // console.log("isSignedIn", isSignedIn);
 
   const router = useRouter();
   useEffect(() => {
