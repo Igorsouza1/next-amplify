@@ -22,10 +22,14 @@ export async function createPost(formData: FormData) {
 
 
 export async function getInitialGeometry() {
+    try{
     const {data: InitialGeometry} = await cookieBasedClient.models.InitialGeometry.list({
         selectionSet: ['name', 'geometry'],
         authMode: 'userPool'
       }); 
       console.log('InitialGeometry', InitialGeometry)
       return InitialGeometry;
+    } catch (error) {
+        console.error('Error getting initial geometry', error)
+    }
 }
