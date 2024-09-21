@@ -22,36 +22,28 @@ const MapLeaflet = () => {
         // Obter os dados de geometria
         const geometryData = await getInitialGeometry();
         console.log("MapLeaflet: Dados de geometria obtidos:", geometryData);
-
-        // Verificar se o array de geometria possui dados
-        if (geometryData.length > 0) {
-          const geometryString = geometryData[0]?.geometry;
-
-          // Verificar se a string de geometria está presente
-          if (geometryString) {
-            const coordinates = convertPolygonStringToLatLngTuples(geometryString as string);
-
-            if (coordinates.length > 0) {
-              setPolygonCoordinates(coordinates);
-            } else {
-              console.error("MapLeaflet: Coordenadas convertidas estão vazias.");
-            }
+  
+        // Verificar se o array de geometria e a string de geometria possuem dados
+        if (geometryData && geometryData.length > 0 && geometryData[0]?.geometry) {
+          const geometryString = geometryData[0].geometry;
+          const coordinates = convertPolygonStringToLatLngTuples(geometryString as string);
+  
+          if (coordinates.length > 0) {
+            setPolygonCoordinates(coordinates);
           } else {
-            console.error("MapLeaflet: String de geometria está vazia ou inválida.");
+            console.error("MapLeaflet: Coordenadas convertidas estão vazias.");
           }
         } else {
-          console.error("MapLeaflet: Nenhuma geometria disponível.");
+          console.error("MapLeaflet: String de geometria está vazia ou inválida.");
         }
       } catch (error) {
         console.error("MapLeaflet: Erro ao buscar dados de geometria:", error);
       }
     };
-
+  
     fetchData();
   }, []);
-
-
-
+  
   return (
     <MapContainer center={[-21.327773, -56.694734]} zoom={10} style={{ height: "100vh", width: "100%" }}>
       <TileLayer
@@ -64,3 +56,7 @@ const MapLeaflet = () => {
 };
 
 export default MapLeaflet;
+function fetchData() {
+  throw new Error("Function not implemented.");
+}
+
