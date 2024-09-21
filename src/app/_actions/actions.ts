@@ -22,5 +22,6 @@ export async function getInitialGeometry() {
         selectionSet: ['name', 'geometry'],
         authMode: 'userPool'
       }); 
+      console.log('InitialGeometry', InitialGeometry)
       return InitialGeometry;
 }
