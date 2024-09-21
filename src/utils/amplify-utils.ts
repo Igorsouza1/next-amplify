@@ -3,7 +3,7 @@ import config from '@/../amplify_outputs.json';
 import { cookies } from 'next/headers';
 import { getCurrentUser } from 'aws-amplify/auth/server';
 import { generateServerClientUsingCookies } from '@aws-amplify/adapter-nextjs/data';
-import { Schema } from '../../amplify/data/resource';
+import { Schema } from '@/../amplify/data/resource';
 
 export const cookieBasedClient = generateServerClientUsingCookies<Schema>({
     config,
