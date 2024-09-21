@@ -4,6 +4,7 @@ import { cookieBasedClient } from "@/utils/amplify-utils"
 import { redirect } from "next/navigation"
 
 export async function createPost(formData: FormData) {
+    try{
     const {data} = await cookieBasedClient.models.InitialGeometry.create({
         type: formData.get('type')?.toString() || '',
         name: formData.get('name')?.toString() || '',
@@ -12,8 +13,11 @@ export async function createPost(formData: FormData) {
         // Geometry is a json object
         geometry: formData.get('geometry')?.toString() || ''
     })
-    console.log('data created ', data)
-    redirect(`/`)
+        console.log('data created ', data)
+        redirect(`/map`)
+    } catch (error) {
+        console.error('Error creating post', error)
+    }
 }
 
 
