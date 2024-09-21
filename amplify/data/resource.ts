@@ -25,7 +25,7 @@ const schema = a.schema({
   }).authorization(allow => [
     allow.guest().to(["create", "read", "update", "delete"]) // Permite leitura pública sem restrição de proprietário
   ]),
-}).authorization(allow => [allow.publicApiKey().to(["read"]), allow.owner()])
+}).authorization(allow => [allow.publicApiKey().to(["read"])])
 
 export type Schema = ClientSchema<typeof schema>;
 
