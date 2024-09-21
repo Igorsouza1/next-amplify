@@ -14,6 +14,8 @@ const schema = a.schema({
     owner: a.string().authorization(allow => [allow.owner().to(['read', 'delete'])]),
   }),
 
+
+
   InitialGeometry: a.model({
     type: a.string(),
     name: a.string(),
@@ -21,7 +23,7 @@ const schema = a.schema({
     crs: a.string(),
     geometry: a.json(),
   }).authorization(allow => [
-    allow.publicApiKey().to(["create", "read", "update", "delete"]) // Permite leitura pública sem restrição de proprietário
+    allow.guest().to(["create", "read", "update", "delete"]) // Permite leitura pública sem restrição de proprietário
   ]),
 }).authorization(allow => [allow.publicApiKey().to(["read"]), allow.owner()])
 
