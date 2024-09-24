@@ -20,8 +20,8 @@ const schema = a.schema({
     size: a.string(),
     crs: a.string(),
     geometry: a.json(),
-  }).authorization(allow => [allow.guest().to(["read"]), allow.owner()]),
-}).authorization(allow => [allow.guest().to(["read"]), allow.owner()])
+  }).authorization(allow => [allow.authenticated().to(["read", "create", "update", "delete"]), allow.owner()]),
+}).authorization(allow => [allow.authenticated().to(["read", "create", "update", "delete"]), allow.owner()])
 
 export type Schema = ClientSchema<typeof schema>;
 
