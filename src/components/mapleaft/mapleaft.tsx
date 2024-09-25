@@ -12,12 +12,22 @@ import { convertGeoJSONToLeaflet } from "@/utils/geojson-utils";
 // Load MapContainer dynamically with SSR disabled
 const MapContainer = dynamic(() => import("react-leaflet").then((mod) => mod.MapContainer), { ssr: false });
 
+
+type Coordinate = [number, number];
+type LinearRing = Coordinate[];
+type Polygon = LinearRing[];
+type MultiPolygon = Polygon[];
+
+type Geometry = 
+  | string
+  | {
+      type: 'Point' | 'LineString' | 'Polygon' | 'MultiPolygon'; // Outros tipos podem ser adicionados aqui
+      coordinates: Coordinate | Coordinate[] | Polygon | MultiPolygon;
+    };
+
 type GeometryData = {
   name: string;
-  geometry: string | {
-    type: string;
-    coordinates: any;
-  };
+  geometry: Geometry
 };
 
 const MapLeaflet = () => {
