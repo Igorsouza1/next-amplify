@@ -18,10 +18,8 @@ type LinearRing = Coordinate[];
 type Polygon = LinearRing[];
 type MultiPolygon = Polygon[];
 
-type Geometry = 
-  | string
-  | {
-      type: 'Point' | 'LineString' | 'Polygon' | 'MultiPolygon'; // Outros tipos podem ser adicionados aqui
+type Geometry = {
+      type: String
       coordinates: Coordinate | Coordinate[] | Polygon | MultiPolygon;
     };
 
@@ -61,12 +59,17 @@ const MapLeaflet = () => {
       {polygonCoordinates.map((item, index) => {
         // Converter geometry de string para objeto, se necessário
         const geometry = typeof item.geometry === "string" ? JSON.parse(item.geometry) : item.geometry;
-
         const convertedCoordinates = convertGeoJSONToLeaflet(geometry);
+
+        
+        console.log("MapLeaflet: Item:", item.name);
+        console.log("MapLeaflet: Type:", item.geometry.type);
+        console.log('--------------------------------')
 
         // Verifica se as coordenadas convertidas não são nulas
         if (convertedCoordinates) {
           if (geometry.type === "Polygon") {
+            console.log("MapLeaflet: Converted Coordinates:", geometry.type);
             return (
               <Polygon key={index} positions={convertedCoordinates} pathOptions={{ color: 'purple' }}>
                 <Popup>

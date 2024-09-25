@@ -14,7 +14,7 @@ type Geometry = {
  * @param geometry - A geometria no formato GeoJSON
  * @returns Coordenadas compatíveis com o Leaflet
  */
-export const convertGeoJSONToLeaflet = (geometry: Geometry): Coordinate[][] | null => {
+export const convertGeoJSONToLeaflet = (geometry: Geometry): Coordinate[][] | null => { 
   console.log("Geometry Type", geometry.type);
 
   if (geometry.type === "Polygon") {
