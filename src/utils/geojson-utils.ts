@@ -3,40 +3,53 @@ import proj4 from "proj4";
 // Definir a projeção UTM para WGS84 (padrão de latitude/longitude)
 const utm21S = "+proj=utm +zone=21 +south +datum=WGS84 +units=m +no_defs";
 
-// Tipos para Polygon e MultiPolygon
+// Tipos para coordenadas
 type LatLngTuple = [number, number];
-type PolygonCoordinates = LatLngTuple[][]; 
+type PolygonCoordinates = LatLngTuple[][];
 type MultiPolygonCoordinates = LatLngTuple[][][];
+type GeometryType = "Polygon" | "MultiPolygon";
 
-// Função para converter coordenadas de UTM para Latitude/Longitude
-export function convertPolygonStringToLatLngTuples(polygonString: string): MultiPolygonCoordinates {
-  try {
-    const polygonData = JSON.parse(polygonString);
+// Interface para os dados da geometria
+interface GeometryData {
+  name: string;
+  geometry: {
+    type: GeometryType;
+    coordinates: any;
+  };
+}
 
-    // Verificar se a estrutura de coordinates e type existem
-    if (!polygonData.coordinates || !polygonData.type) {
-      console.error("convertPolygonStringToLatLngTuples: Formato inválido.");
+// Função para processar o array de dados de geometria
+export function convertGeometryArrayToLatLngTuples(dataArray: GeometryData[]): MultiPolygonCoordinates[] {
+  return dataArray.map(item => {
+    if (item.geometry) {
+      return convertGeometryToLatLngTuples(item.geometry) || [];
+    } else {
+      console.error(`convertGeometryArrayToLatLngTuples: O item ${item.name} não possui geometria.`);
       return [];
     }
+  });
+}
 
-    const { type, coordinates } = polygonData;
+// Função para converter a geometria de UTM para Latitude/Longitude
+export function convertGeometryToLatLngTuples(geometry: { type: GeometryType; coordinates: any }): MultiPolygonCoordinates | null {
+  try {
+    const { type, coordinates } = geometry;
 
     if (type === "Polygon") {
       return [convertCoordinatesArray(coordinates as number[][][])];
     } else if (type === "MultiPolygon") {
-      console.log("convertPolygonStringToLatLngTuples: MultiPolygon encontrado");
-      return (coordinates as number[][][][]).map((polygon) => convertCoordinatesArray(polygon));
+      return (coordinates as number[][][][]).map(polygon => convertCoordinatesArray(polygon));
     } else {
-      console.error(`convertPolygonStringToLatLngTuples: Tipo de geometria "${type}" não suportado.`);
-      return [];
+      console.error(`convertGeometryToLatLngTuples: Tipo de geometria "${type}" não suportado.`);
+      return null;
     }
   } catch (error) {
-    console.error("convertPolygonStringToLatLngTuples: Erro ao converter a string de geometria:", error);
-    return [];
+    console.error("convertGeometryToLatLngTuples: Erro ao converter a geometria:", error);
+    return null;
   }
 }
 
-// Função auxiliar para converter uma array de coordenadas
+// Função auxiliar para converter um array de coordenadas
 function convertCoordinatesArray(coordinates: number[][][]): PolygonCoordinates {
   return coordinates.map((ring: number[][]) => {
     return ring.map((coordinatePair: number[]) => {
@@ -46,7 +59,7 @@ function convertCoordinatesArray(coordinates: number[][][]): PolygonCoordinates 
         const [lng, lat] = proj4(utm21S, "WGS84", [x, y]) as [number, number];
         return [lat, lng];
       } else {
-        console.error("convertPolygonStringToLatLngTuples: Par de coordenadas inválido:", coordinatePair);
+        console.error("convertCoordinatesArray: Par de coordenadas inválido:", coordinatePair);
         return [0, 0]; // Retornar uma coordenada padrão para evitar erro de tipagem
       }
     });
