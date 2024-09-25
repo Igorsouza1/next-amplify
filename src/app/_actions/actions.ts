@@ -16,6 +16,7 @@ export async function createPost(formData: FormData) {
         geometry: formData.get('geometry')?.toString() || ''
     })
     console.log('data created ', data)
+    redirect('/')
 
     
     } catch (error) {

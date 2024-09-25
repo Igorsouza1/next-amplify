@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { TileLayer, Polygon } from "react-leaflet";
+import { TileLayer, Polygon, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
@@ -51,19 +51,30 @@ const MapLeaflet = () => {
       {polygonCoordinates.map((item, index) => {
         // Converter geometry de string para objeto, se necessário
         const geometry = typeof item.geometry === "string" ? JSON.parse(item.geometry) : item.geometry;
-        
-        console.log("item geometry", geometry);
-        console.log("item type", geometry?.type);
 
         const convertedCoordinates = convertGeoJSONToLeaflet(geometry);
 
         // Verifica se as coordenadas convertidas não são nulas
         if (convertedCoordinates) {
           if (geometry.type === "Polygon") {
-            return <Polygon key={index} positions={convertedCoordinates} />;
+            return (
+              <Polygon key={index} positions={convertedCoordinates} pathOptions={{ color: 'purple' }}>
+                <Popup>
+                  <div>
+                    <strong>Nome:</strong> {item.name}
+                  </div>
+                </Popup>
+              </Polygon>
+            );
           } else if (geometry.type === "MultiPolygon") {
             return convertedCoordinates.map((coords, polyIndex) => (
-              <Polygon key={`${index}-${polyIndex}`} positions={coords} />
+              <Polygon key={`${index}-${polyIndex}`} positions={coords} pathOptions={{ color: 'purple' }}>
+                <Popup>
+                  <div>
+                    <strong>Nome:</strong> {item.name}
+                  </div>
+                </Popup>
+              </Polygon>
             ));
           }
         }
