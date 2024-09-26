@@ -4,23 +4,39 @@ import { cookieBasedClient } from "@/utils/amplify-utils"
 import { redirect } from "next/navigation"
 
 export async function createPost(formData: FormData) {
-    console.log('formData', formData)
-    try{
-        
-    const {data} = await cookieBasedClient.models.InitialGeometry.create({
-        type: formData.get('type')?.toString() || '',
-        name: formData.get('name')?.toString() || '',
-        size: formData.get('size')?.toString() || '',
-        crs: formData.get('crs')?.toString() || '',
-        // Geometry is a json object
-        geometry: formData.get('geometry')?.toString() || ''
-    })
-    console.log('data created ', data)
-    redirect('/')
+    // console.log('formData', formData);
+    try {
+        // const geometryString = formData.get('geometry')?.toString() || ''; // Remove leading/trailing whitespace
 
-    
+        // // Validate that the geometry string is potentially a JSON object
+        // if (!geometryString.startsWith('{') && !geometryString.startsWith('[')) {
+        //     console.error('Invalid JSON format for geometry: not starting with { or [');
+        //     return;
+        // }
+
+        // // Attempt to parse the geometry string into a JSON object
+        // let geometryObject;
+        // try {
+        //     geometryObject = JSON.parse(geometryString);
+        // } catch (parseError) {
+        //     console.error('Invalid JSON format for geometry:', parseError);
+        //     return; // Exit the function early if parsing fails
+        // }
+
+        const { data } = await cookieBasedClient.models.InitialGeometry.create({
+            type: formData.get('type')?.toString() || '',
+            name: formData.get('name')?.toString() || '',
+            size: formData.get('size')?.toString() || '',
+            crs: formData.get('crs')?.toString() || '',
+            // Geometry is now a parsed JSON object
+            geometry: formData.get('geometry')?.toString() || ''
+        });
+        
+        console.log('Data created', data);
+        // redirect('/map')
+
     } catch (error) {
-        console.error('Error creating post', error)
+        console.error('Error creating post', error);
     }
 }
 

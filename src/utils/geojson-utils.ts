@@ -15,7 +15,10 @@ type Geometry = {
  * @returns Coordenadas compatíveis com o Leaflet
  */
 export const convertGeoJSONToLeaflet = (geometry: Geometry): Coordinate[][] | null => { 
-  console.log("Geometry Type", geometry.type);
+  if(typeof geometry === "string"){
+    geometry = JSON.parse(geometry)
+  }
+  // console.log("Geometry Type", geometry.type);
 
   if (geometry.type === "Polygon") {
     // Verifica se 'coordinates' é do tipo Polygon

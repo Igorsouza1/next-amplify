@@ -10,8 +10,10 @@ import { getInitialGeometry } from "@/app/_actions/actions";
 import { convertGeoJSONToLeaflet } from "@/utils/geojson-utils";
 
 // Load MapContainer dynamically with SSR disabled
-const MapContainer = dynamic(() => import("react-leaflet").then((mod) => mod.MapContainer), { ssr: false });
-
+const MapContainer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.MapContainer),
+  { ssr: false }
+);
 
 type Coordinate = [number, number];
 type LinearRing = Coordinate[];
@@ -19,17 +21,19 @@ type Polygon = LinearRing[];
 type MultiPolygon = Polygon[];
 
 type Geometry = {
-      type: String
-      coordinates: Coordinate | Coordinate[] | Polygon | MultiPolygon;
-    };
+  type: String;
+  coordinates: Coordinate | Coordinate[] | Polygon | MultiPolygon;
+};
 
 type GeometryData = {
   name: string;
-  geometry: Geometry
+  geometry: Geometry;
 };
 
 const MapLeaflet = () => {
-  const [polygonCoordinates, setPolygonCoordinates] = useState<GeometryData[]>([]);
+  const [polygonCoordinates, setPolygonCoordinates] = useState<GeometryData[]>(
+    []
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,7 +53,11 @@ const MapLeaflet = () => {
   }, []);
 
   return (
-    <MapContainer center={[-21.327773, -56.694734]} zoom={10} style={{ height: "100vh", width: "100%" }}>
+    <MapContainer
+      center={[-21.327773, -56.694734]}
+      zoom={10}
+      style={{ height: "100vh", width: "100%" }}
+    >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -57,42 +65,51 @@ const MapLeaflet = () => {
 
       {/* Renderizando múltiplos polígonos */}
       {polygonCoordinates.map((item, index) => {
-        // Converter geometry de string para objeto, se necessário
-        const geometry = typeof item.geometry === "string" ? JSON.parse(item.geometry) : item.geometry;
-        const convertedCoordinates = convertGeoJSONToLeaflet(geometry);
-
-        
-        console.log("MapLeaflet: Item:", item.name);
-        console.log("MapLeaflet: Type:", item.geometry.type);
-        console.log('--------------------------------')
-
-        // Verifica se as coordenadas convertidas não são nulas
-        if (convertedCoordinates) {
-          if (geometry.type === "Polygon") {
-            console.log("MapLeaflet: Converted Coordinates:", geometry.type);
-            return (
-              <Polygon key={index} positions={convertedCoordinates} pathOptions={{ color: 'purple' }}>
-                <Popup>
-                  <div>
-                    <strong>Nome:</strong> {item.name}
-                  </div>
-                </Popup>
-              </Polygon>
-            );
-          } else if (geometry.type === "MultiPolygon") {
-            return convertedCoordinates.map((coords, polyIndex) => (
-              <Polygon key={`${index}-${polyIndex}`} positions={coords} pathOptions={{ color: 'purple' }}>
-                <Popup>
-                  <div>
-                    <strong>Nome:</strong> {item.name}
-                  </div>
-                </Popup>
-              </Polygon>
-            ));
-          }
-        }
+    // Verifica se item.geometry é uma string e, em caso afirmativo, converte para objeto
+    let geometry;
+    try {
+        geometry = typeof item.geometry === "string" ? JSON.parse(item.geometry).geometry : item.geometry;
+    } catch (error) {
+        console.error("Erro ao analisar a geometria do item:", item, error);
         return null;
-      })}
+    }
+
+    // Adicione verificações extras
+    if (!geometry || !geometry.type) {
+        console.error("A geometria ou o tipo de geometria está ausente para o item:", item);
+        return null; // Pular itens com geometria inválida
+    }
+
+    console.log("Geometry", geometry);
+    console.log("Geometry Type", geometry.type);
+
+    const convertedCoordinates = convertGeoJSONToLeaflet(geometry);
+
+    if (convertedCoordinates) {
+        if (geometry.type === "Polygon") {
+            return (
+                <Polygon key={index} positions={convertedCoordinates} pathOptions={{ color: 'purple' }}>
+                    <Popup>
+                        <div>
+                            <strong>Nome:</strong> {item.name}
+                        </div>
+                    </Popup>
+                </Polygon>
+            );
+        } else if (geometry.type === "MultiPolygon") {
+            return convertedCoordinates.map((coords, polyIndex) => (
+                <Polygon key={`${index}-${polyIndex}`} positions={coords} pathOptions={{ color: 'purple' }}>
+                    <Popup>
+                        <div>
+                            <strong>Nome:</strong> {item.name}
+                        </div>
+                    </Popup>
+                </Polygon>
+            ));
+        }
+    }
+    return null;
+})}
     </MapContainer>
   );
 };
