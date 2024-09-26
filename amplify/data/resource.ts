@@ -5,8 +5,8 @@ const schema = a.schema({
     type: a.string(),
     name: a.string(),
     size: a.string(),
-    crs: a.string(),
-    geometry: a.json(),
+    color: a.string(),
+    features: a.json(),
   }).authorization(allow => [allow.authenticated().to(["read", "create", "update", "delete"]), allow.owner()]),
 }).authorization(allow => [allow.authenticated().to(["read", "create", "update", "delete"]), allow.owner()])
 

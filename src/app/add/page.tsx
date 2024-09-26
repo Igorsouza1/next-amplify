@@ -8,8 +8,8 @@ export default function Add() {
         <input type="text" name="type" placeholder="type" id="type" className="p-2 rounded-md" />
         <input type="text" name="name" placeholder="name" id="name" className="p-2 rounded-md" />
         <input type="text" name="size" placeholder="size" id="size" className="p-2 rounded-md" />
-        <input type="text" name="crs" placeholder="crs" id="crs" className="p-2 rounded-md" />
-        <input type="text" name="geometry" placeholder="geometry" id="geometry" className="p-2 rounded-md" />
+        <input type="text" name="color" placeholder="color" id="color" className="p-2 rounded-md" />
+        <input type="text" name="features" placeholder="features" id="features" className="p-2 rounded-md" />
         <button type="submit" className="bg-blue-500 text-white p-2 rounded-md">Create Post</button>  
       </form>
     </div>

@@ -27,9 +27,9 @@ export async function createPost(formData: FormData) {
             type: formData.get('type')?.toString() || '',
             name: formData.get('name')?.toString() || '',
             size: formData.get('size')?.toString() || '',
-            crs: formData.get('crs')?.toString() || '',
-            // Geometry is now a parsed JSON object
-            geometry: formData.get('geometry')?.toString() || ''
+            color: formData.get('color')?.toString() || '',
+            // features is now a parsed JSON object
+            features: formData.get('features')?.toString() || '',
         });
         
         console.log('Data created', data);
@@ -44,7 +44,7 @@ export async function createPost(formData: FormData) {
 export async function getInitialGeometry() {
     try{
     const {data: InitialGeometry} = await cookieBasedClient.models.InitialGeometry.list({
-        selectionSet: ['name', 'geometry', 'size'],
+        selectionSet: ['name', 'features', 'size'],
         authMode: 'userPool'
       }); 
     //   console.log('InitialGeometry', InitialGeometry)
