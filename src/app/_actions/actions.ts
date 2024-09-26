@@ -44,7 +44,7 @@ export async function createPost(formData: FormData) {
 export async function getInitialGeometry() {
     try{
     const {data: InitialGeometry} = await cookieBasedClient.models.InitialGeometry.list({
-        selectionSet: ['name', 'geometry'],
+        selectionSet: ['name', 'geometry', 'size'],
         authMode: 'userPool'
       }); 
     //   console.log('InitialGeometry', InitialGeometry)

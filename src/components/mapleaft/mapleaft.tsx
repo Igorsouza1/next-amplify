@@ -21,12 +21,13 @@ type Polygon = LinearRing[];
 type MultiPolygon = Polygon[];
 
 type Geometry = {
-  type: String;
+  type: string;
   coordinates: Coordinate | Coordinate[] | Polygon | MultiPolygon;
 };
 
 type GeometryData = {
   name: string;
+  size: string;
   geometry: Geometry;
 };
 
@@ -52,6 +53,16 @@ const MapLeaflet = () => {
     fetchData();
   }, []);
 
+
+  function gerarCorAleatoria() {
+    const letras = '0123456789ABCDEF';
+    let cor = '#';
+    for (let i = 0; i < 6; i++) {
+      cor += letras[Math.floor(Math.random() * 16)];
+    }
+    return cor;
+  }
+
   return (
     <MapContainer
       center={[-21.327773, -56.694734]}
@@ -65,51 +76,69 @@ const MapLeaflet = () => {
 
       {/* Renderizando múltiplos polígonos */}
       {polygonCoordinates.map((item, index) => {
-    // Verifica se item.geometry é uma string e, em caso afirmativo, converte para objeto
-    let geometry;
-    try {
-        geometry = typeof item.geometry === "string" ? JSON.parse(item.geometry).geometry : item.geometry;
-    } catch (error) {
-        console.error("Erro ao analisar a geometria do item:", item, error);
-        return null;
-    }
-
-    // Adicione verificações extras
-    if (!geometry || !geometry.type) {
-        console.error("A geometria ou o tipo de geometria está ausente para o item:", item);
-        return null; // Pular itens com geometria inválida
-    }
-
-    console.log("Geometry", geometry);
-    console.log("Geometry Type", geometry.type);
-
-    const convertedCoordinates = convertGeoJSONToLeaflet(geometry);
-
-    if (convertedCoordinates) {
-        if (geometry.type === "Polygon") {
-            return (
-                <Polygon key={index} positions={convertedCoordinates} pathOptions={{ color: 'purple' }}>
-                    <Popup>
-                        <div>
-                            <strong>Nome:</strong> {item.name}
-                        </div>
-                    </Popup>
-                </Polygon>
-            );
-        } else if (geometry.type === "MultiPolygon") {
-            return convertedCoordinates.map((coords, polyIndex) => (
-                <Polygon key={`${index}-${polyIndex}`} positions={coords} pathOptions={{ color: 'purple' }}>
-                    <Popup>
-                        <div>
-                            <strong>Nome:</strong> {item.name}
-                        </div>
-                    </Popup>
-                </Polygon>
-            ));
+        // Verifica se item.geometry é uma string e, em caso afirmativo, converte para objeto
+        let geometry;
+        try {
+          geometry =
+            typeof item.geometry === "string"
+              ? JSON.parse(item.geometry).geometry
+              : item.geometry;
+        } catch (error) {
+          console.error("Erro ao analisar a geometria do item:", item, error);
+          return null;
         }
-    }
-    return null;
-})}
+
+        // Adicione verificações extras
+        if (!geometry || !geometry.type) {
+          console.error(
+            "A geometria ou o tipo de geometria está ausente para o item:",
+            item
+          );
+          return null; // Pular itens com geometria inválida
+        }
+
+        console.log("Geometry", geometry);
+        console.log("Geometry Type", geometry.type);
+
+        const convertedCoordinates = convertGeoJSONToLeaflet(geometry);
+
+        if (convertedCoordinates) {
+          if (geometry.type === "Polygon") {
+            return (
+              <Polygon
+                key={index}
+                positions={convertedCoordinates}
+                pathOptions={{ color: "purple" }}
+              >
+                <Popup>
+                  <div>
+                    <strong>Nome:</strong> {item.name}
+                  </div>
+                  <div>
+                    <strong>Tamanho:</strong> {item.size}
+                  </div>
+                </Popup>
+              </Polygon>
+            );
+          } else if (geometry.type === "MultiPolygon") {
+            return convertedCoordinates.map((coords, polyIndex) => (
+              <Polygon
+                key={`${index}-${polyIndex}`}
+                positions={coords}
+                pathOptions={{ color: gerarCorAleatoria() }}
+              >
+                <Popup>
+                  <div>
+                    <strong>Nome:</strong> {item.name}
+                    <strong>Tamanho:</strong> {item.size}
+                  </div>
+                </Popup>
+              </Polygon>
+            ));
+          }
+        }
+        return null;
+      })}
     </MapContainer>
   );
 };
