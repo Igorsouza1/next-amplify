@@ -25,18 +25,28 @@ const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: Featur
         <div>
           <strong>Tamanho:</strong> {parentSize} ha
         </div>
-        <div>
-          <strong>Município:</strong> {feature.properties?.municipio}
-        </div>
-        <div>
-          <strong>Status:</strong> {feature.properties?.ind_status}
-        </div>
-        <div>
-          <strong>CAR:</strong> {feature.properties?.cod_imovel}
-        </div>
+        {/* Verifica se o município existe antes de renderizar */}
+        {feature.properties?.municipio && (
+          <div>
+            <strong>Município:</strong> {feature.properties.municipio}
+          </div>
+        )}
+        {/* Verifica se o status existe antes de renderizar */}
+        {feature.properties?.ind_status && (
+          <div>
+            <strong>Status:</strong> {feature.properties.ind_status}
+          </div>
+        )}
+        {/* Verifica se o CAR (cod_imovel) existe antes de renderizar */}
+        {feature.properties?.cod_imovel && (
+          <div>
+            <strong>CAR:</strong> {feature.properties.cod_imovel}
+          </div>
+        )}
       </div>
     </Popup>
   );
+
 
   if (geometry.type === "Polygon") {
     return (
@@ -61,13 +71,5 @@ const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: Featur
   return null;
 };
 
-function gerarCorAleatoria() {
-  const letras = "0123456789ABCDEF";
-  let cor = "#";
-  for (let i = 0; i < 6; i++) {
-    cor += letras[Math.floor(Math.random() * 16)];
-  }
-  return cor;
-}
 
 export default FeaturePolygon;
