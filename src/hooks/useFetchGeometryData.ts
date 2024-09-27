@@ -19,7 +19,8 @@ export const useFetchGeometryData = () => {
         }));
         setGeometryData(parsedData?.map(item => ({
           ...item,
-          size: item.size ?? ''
+          size: item.size ?? '',
+          color: item.color ?? '',
         })) ?? []);
       } catch (error) {
         console.error("Erro ao obter dados de geometria:", error);

@@ -28,5 +28,6 @@ export interface Feature {
 export interface GeometryData {
   name: string;
   size: string;
+  color: string;
   features: Feature[];
 }

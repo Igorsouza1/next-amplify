@@ -7,9 +7,10 @@ interface FeaturePolygonProps {
   feature: Feature;
   parentName: string;
   parentSize: string;
+  parentColor: string;
 }
 
-const FeaturePolygon = ({ feature, parentName, parentSize }: FeaturePolygonProps) => {
+const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: FeaturePolygonProps) => {
   const geometry = feature.geometry;
   const convertedCoordinates = convertGeoJSONToLeaflet(geometry);
 
@@ -39,7 +40,7 @@ const FeaturePolygon = ({ feature, parentName, parentSize }: FeaturePolygonProps
 
   if (geometry.type === "Polygon") {
     return (
-      <Polygon positions={convertedCoordinates} pathOptions={{ color: "purple" }}>
+      <Polygon positions={convertedCoordinates} pathOptions={{ color: parentColor }}>
         {popupContent}
       </Polygon>
     );
@@ -49,7 +50,7 @@ const FeaturePolygon = ({ feature, parentName, parentSize }: FeaturePolygonProps
     return (
       <>
         {convertedCoordinates.map((coords, index) => (
-          <Polygon key={index} positions={coords} pathOptions={{ color: gerarCorAleatoria() }}>
+          <Polygon key={index} positions={coords} pathOptions={{ color: parentColor }}>
             {popupContent}
           </Polygon>
         ))}

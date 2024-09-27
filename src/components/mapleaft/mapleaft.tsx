@@ -1,15 +1,12 @@
-// components/MapLeaflet.tsx
 "use client";
 
-import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
-import { getInitialGeometry } from "@/app/_actions/actions";
 import FeaturePolygon from "./featurePolygon/featurePolygon";
-import { GeometryData } from "@/@types/geomtry";
+import { useFetchGeometryData } from "@/hooks/useFetchGeometryData"; // Importando o hook personalizado
 
 // Load MapContainer dynamically with SSR disabled
 const MapContainer = dynamic(
@@ -18,33 +15,8 @@ const MapContainer = dynamic(
 );
 
 const MapLeaflet = () => {
-  const [geometryData, setGeometryData] = useState<GeometryData[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getInitialGeometry();
-        console.log("MapLeaflet: Dados de geometria obtidos:", data);
-
-        if (data) {
-          const parsedData = data.map((item) => ({
-            ...item,
-            name: item.name ?? "",
-            features:
-              typeof item.features === "string"
-                ? JSON.parse(item.features).features
-                : item.features,
-          }));
-
-          setGeometryData(parsedData as GeometryData[]);
-        }
-      } catch (error) {
-        console.error("Erro ao obter dados de geometria:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  // Usando o hook personalizado para obter os dados
+  const geometryData = useFetchGeometryData();
 
   return (
     <MapContainer
@@ -58,19 +30,20 @@ const MapLeaflet = () => {
       />
 
       {geometryData.map((item, index) => {
-        if (!Array.isArray(item.features)) {
+        if (Array.isArray(item.features)) {
+          return item.features.map((feature, featureIndex) => (
+            <FeaturePolygon
+              key={`${index}-${featureIndex}`}
+              feature={feature}
+              parentName={item.name}
+              parentSize={item.size}
+              parentColor={item.color}
+            />
+          ));
+        } else {
           console.error(`As features do item ${index} não são um array:`, item.features);
-          return null;
+          return null; // Retorna null se item.features não for um array
         }
-
-        return item.features.map((feature, featureIndex) => (
-          <FeaturePolygon
-            key={`${index}-${featureIndex}`}
-            feature={feature}
-            parentName={item.name}
-            parentSize={item.size}
-          />
-        ));
       })}
     </MapContainer>
   );
