@@ -25,7 +25,9 @@ const FeaturePolygon = ({
   // Verifica se o nome das propriedades é "Propriedades"
   const isPropriedades =
     parentName === "Propriedades" || parentName === "Novas Propriedades";
-  const isDesmatamento = parentName === "Desmatamento" || parentName === "Desmatamento Bacia";
+  const isDesmatamento =
+    parentName === "Desmatamento" || parentName === "Desmatamento Bacia";
+  const isFire = parentName === "Fogo";
 
   const popupContent = (
     <Popup>
@@ -91,6 +93,16 @@ const FeaturePolygon = ({
               <div>
                 <strong>Data de Detecção:</strong>{" "}
                 {new Date(feature.properties.datadetec).toLocaleDateString()}
+              </div>
+            )}
+          </>
+        )}
+
+        {isFire && (
+          <>
+            {feature.properties?.sub_area && (
+              <div>
+                <strong>Area:</strong> {feature.properties.sub_area} ha
               </div>
             )}
           </>

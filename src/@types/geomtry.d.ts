@@ -28,6 +28,7 @@ export interface Feature {
     municipio?: string;
     area_ha?: number;
     datadetec?: string;
+    sub_area?: number;
   };
   geometry: Geometry;
 }
