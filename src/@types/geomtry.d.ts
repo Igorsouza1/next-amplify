@@ -12,16 +12,16 @@ export interface Feature {
   id: string;
   type: "Feature";
   properties: {
-    cod_tema?: string;
-    nom_tema?: string;
-    cod_imovel?: string;
-    mod_fiscal?: number;
-    num_area?: number;
-    ind_status?: string;
-    ind_tipo?: string;
-    des_condic?: string;
-    municipio?: string;
-    cod_estado?: string;
+    COD_TEMA?: string;
+    NOM_TEMA?: string;
+    COD_IMOVEL?: string;
+    MOD_FISCAL?: number;
+    NUM_AREA?: number;
+    IND_STATUS?: string;
+    IND_TIPO?: string;
+    DES_CONDIC?: string;
+    MUNICIPIO?: string;
+    COD_ESTADO?: string;
   };
   geometry: Geometry;
 }

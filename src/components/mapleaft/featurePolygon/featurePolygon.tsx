@@ -24,9 +24,9 @@ const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: Featur
 
     console.log("Feature Properties:", feature.properties);
     console.log("Feature properties:", feature.properties);
-    console.log("Município:", feature.properties?.municipio);
-    console.log("Status:", feature.properties?.ind_status);
-    console.log("CAR:", feature.properties?.cod_imovel);
+    console.log("Município:", feature.properties?.MUNICIPIO);
+    console.log("Status:", feature.properties?.IND_STATUS);
+    console.log("CAR:", feature.properties?.COD_IMOVEL);
       console.log("IsPropriedade: ",isPropriedades);
       console.log("ParentName",parentName)
 
@@ -43,19 +43,19 @@ const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: Featur
         {/* Exibir somente se for "Propriedades" */}
         {isPropriedades && (
           <>
-            {feature.properties?.municipio && (
+            {feature.properties?.MUNICIPIO && (
               <div>
-                <strong>Município:</strong> {feature.properties.municipio}
+                <strong>Município:</strong> {feature.properties.MUNICIPIO}
               </div>
             )}
-            {feature.properties?.ind_status && (
+            {feature.properties?.IND_STATUS && (
               <div>
-                <strong>Status:</strong> {feature.properties.ind_status}
+                <strong>Status:</strong> {feature.properties.IND_STATUS}
               </div>
             )}
-            {feature.properties?.cod_imovel && (
+            {feature.properties?.COD_IMOVEL && (
               <div>
-                <strong>CAR:</strong> {feature.properties.cod_imovel}
+                <strong>CAR:</strong> {feature.properties.COD_IMOVEL}
               </div>
             )}
           </>
