@@ -6,7 +6,9 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import FeaturePolygon from "./featurePolygon/featurePolygon";
-import { useFetchGeometryData } from "@/hooks/useFetchGeometryData"; // Importando o hook personalizado
+import { useFetchGeometryData } from "@/hooks/useFetchGeometryData"; // Importando o hook personalizado.
+
+import { useShapeContext } from "@/Context/shapeContext";
 
 // Load MapContainer dynamically with SSR disabled
 const MapContainer = dynamic(
@@ -14,9 +16,9 @@ const MapContainer = dynamic(
   { ssr: false }
 );
 
+
 const MapLeaflet = () => {
-  // Usando o hook personalizado para obter os dados
-  const geometryData = useFetchGeometryData();
+  const { activeShapes } = useShapeContext();
 
   return (
     <MapContainer
@@ -25,26 +27,20 @@ const MapLeaflet = () => {
       style={{ height: "100vh", width: "100%" }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution='&copy; OpenStreetMap contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-
-      {geometryData.map((item, index) => {
-        if (Array.isArray(item.features)) {
-          return item.features.map((feature, featureIndex) => (
-            <FeaturePolygon
-              key={`${index}-${featureIndex}`}
-              feature={feature}
-              parentName={item.name}
-              parentSize={item.size}
-              parentColor={item.color}
-            />
-          ));
-        } else {
-          console.error(`As features do item ${index} não são um array:`, item.features);
-          return null; // Retorna null se item.features não for um array
-        }
-      })}
+      {activeShapes.map((shape) =>
+        shape.features.map((feature) => (
+          <FeaturePolygon
+            key={feature.id}
+            feature={feature}
+            parentName={shape.name}
+            parentSize={shape.size}
+            parentColor={shape.color}
+          />
+        ))
+      )}
     </MapContainer>
   );
 };

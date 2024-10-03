@@ -4,6 +4,7 @@ import Auth from "@/components/auth/auth";
 import NavBar from "@/components/Navbar/Navbar";
 import { isAuthenticated } from "@/utils/amplify-utils";
 import { Toaster } from "@/components/ui/toaster";
+import { ShapeProvider } from '@/Context/shapeContext';
 
 
 export const metadata: Metadata = {
@@ -22,7 +23,9 @@ export default async function RootLayout({
         <NavBar isSignedIn={await isAuthenticated()} />
         <Auth>
           
-          {children}
+          <ShapeProvider>
+            {children}
+          </ShapeProvider>
           <Toaster />
 
         </Auth>

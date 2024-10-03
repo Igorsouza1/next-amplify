@@ -9,6 +9,7 @@ export interface Geometry {
 }
 
 export interface Feature {
+  id: string;
   type: "Feature";
   properties: {
     cod_tema?: string;
@@ -26,6 +27,7 @@ export interface Feature {
 }
 
 export interface GeometryData {
+  id: string;
   name: string;
   size: string;
   color: string;
