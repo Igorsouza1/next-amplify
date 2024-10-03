@@ -17,11 +17,12 @@ export interface Feature {
     COD_IMOVEL?: string;
     MOD_FISCAL?: number;
     NUM_AREA?: number;
-    IND_STATUS?: string;
+    SITUACAO?: string;
     IND_TIPO?: string;
     DES_CONDIC?: string;
-    MUNICIPIO?: string;
+    NOM_MUNICI?: string;
     COD_ESTADO?: string;
+    nome?: string;
   };
   geometry: Geometry;
 }

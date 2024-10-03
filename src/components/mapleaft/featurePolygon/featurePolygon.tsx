@@ -17,18 +17,9 @@ const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: Featur
   if (!convertedCoordinates) return null;
 
   // Verifica se o nome das propriedades é "Propriedades"
-  const isPropriedades = feature.properties && 
-   (parentName.toLowerCase() === "propriedades".toLowerCase() || 
-    parentName.toLowerCase() === "multifeature".toLowerCase());
+  const isPropriedades = parentName === "Propriedades" || parentName === "Novas Propriedades";
 
 
-    console.log("Feature Properties:", feature.properties);
-    console.log("Feature properties:", feature.properties);
-    console.log("Município:", feature.properties?.MUNICIPIO);
-    console.log("Status:", feature.properties?.IND_STATUS);
-    console.log("CAR:", feature.properties?.COD_IMOVEL);
-      console.log("IsPropriedade: ",isPropriedades);
-      console.log("ParentName",parentName)
 
   const popupContent = (
     <Popup>
@@ -36,26 +27,37 @@ const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: Featur
         <div>
           <strong>Nome:</strong> {parentName}
         </div>
-        <div>
+        {/* <div>
           <strong>Tamanho:</strong> {parentSize} ha
-        </div>
+        </div> */}
 
         {/* Exibir somente se for "Propriedades" */}
         {isPropriedades && (
           <>
-            {feature.properties?.MUNICIPIO && (
+            {feature.properties?.NOM_MUNICI && (
               <div>
-                <strong>Município:</strong> {feature.properties.MUNICIPIO}
+                <strong>Município:</strong> {feature.properties.NOM_MUNICI}
               </div>
             )}
-            {feature.properties?.IND_STATUS && (
+            {feature.properties?.SITUACAO && (
               <div>
-                <strong>Status:</strong> {feature.properties.IND_STATUS}
+                <strong>Status:</strong> {feature.properties.SITUACAO}
               </div>
             )}
             {feature.properties?.COD_IMOVEL && (
               <div>
                 <strong>CAR:</strong> {feature.properties.COD_IMOVEL}
+              </div>
+            )}
+
+            {feature.properties?.nome && (  
+              <div>
+                <strong>Nome:</strong> {feature.properties.nome}
+              </div>
+            )}
+            {feature.properties?.NUM_AREA && (  
+              <div>
+                <strong>Tamanho:</strong> {feature.properties.NUM_AREA.toFixed(2)} Ha
               </div>
             )}
           </>
