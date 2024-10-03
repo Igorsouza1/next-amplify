@@ -16,6 +16,9 @@ const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: Featur
 
   if (!convertedCoordinates) return null;
 
+  // Verifica se o nome das propriedades é "Propriedades"
+  const isPropriedades = feature.properties && parentName === "Propriedades";
+
   const popupContent = (
     <Popup>
       <div className="flex flex-col">
@@ -25,28 +28,30 @@ const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: Featur
         <div>
           <strong>Tamanho:</strong> {parentSize} ha
         </div>
-        {/* Verifica se o município existe antes de renderizar */}
-        {feature.properties?.municipio && (
-          <div>
-            <strong>Município:</strong> {feature.properties.municipio}
-          </div>
-        )}
-        {/* Verifica se o status existe antes de renderizar */}
-        {feature.properties?.ind_status && (
-          <div>
-            <strong>Status:</strong> {feature.properties.ind_status}
-          </div>
-        )}
-        {/* Verifica se o CAR (cod_imovel) existe antes de renderizar */}
-        {feature.properties?.cod_imovel && (
-          <div>
-            <strong>CAR:</strong> {feature.properties.cod_imovel}
-          </div>
+
+        {/* Exibir somente se for "Propriedades" */}
+        {isPropriedades && (
+          <>
+            {feature.properties?.municipio && (
+              <div>
+                <strong>Município:</strong> {feature.properties.municipio}
+              </div>
+            )}
+            {feature.properties?.ind_status && (
+              <div>
+                <strong>Status:</strong> {feature.properties.ind_status}
+              </div>
+            )}
+            {feature.properties?.cod_imovel && (
+              <div>
+                <strong>CAR:</strong> {feature.properties.cod_imovel}
+              </div>
+            )}
+          </>
         )}
       </div>
     </Popup>
   );
-
 
   if (geometry.type === "Polygon") {
     return (
@@ -70,6 +75,5 @@ const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: Featur
 
   return null;
 };
-
 
 export default FeaturePolygon;
