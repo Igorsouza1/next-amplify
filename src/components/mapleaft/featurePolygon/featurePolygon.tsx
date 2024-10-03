@@ -2,6 +2,7 @@
 import { Polygon, Popup } from "react-leaflet";
 import { Feature } from "@/@types/geomtry";
 import { convertGeoJSONToLeaflet } from "@/utils/geojson-utils";
+import React from "react";
 
 interface FeaturePolygonProps {
   feature: Feature;
@@ -10,16 +11,21 @@ interface FeaturePolygonProps {
   parentColor: string;
 }
 
-const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: FeaturePolygonProps) => {
+const FeaturePolygon = ({
+  feature,
+  parentName,
+  parentSize,
+  parentColor,
+}: FeaturePolygonProps) => {
   const geometry = feature.geometry;
   const convertedCoordinates = convertGeoJSONToLeaflet(geometry);
 
   if (!convertedCoordinates) return null;
 
   // Verifica se o nome das propriedades é "Propriedades"
-  const isPropriedades = parentName === "Propriedades" || parentName === "Novas Propriedades";
-
-
+  const isPropriedades =
+    parentName === "Propriedades" || parentName === "Novas Propriedades";
+  const isDesmatamento = parentName === "Desmatamento" || parentName === "Desmatamento Bacia";
 
   const popupContent = (
     <Popup>
@@ -50,14 +56,41 @@ const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: Featur
               </div>
             )}
 
-            {feature.properties?.nome && (  
+            {feature.properties?.nome && (
               <div>
                 <strong>Nome:</strong> {feature.properties.nome}
               </div>
             )}
-            {feature.properties?.NUM_AREA && (  
+            {feature.properties?.NUM_AREA && (
               <div>
-                <strong>Tamanho:</strong> {feature.properties.NUM_AREA.toFixed(2)} Ha
+                <strong>Tamanho:</strong>{" "}
+                {feature.properties.NUM_AREA.toFixed(2)} Ha
+              </div>
+            )}
+          </>
+        )}
+
+        {isDesmatamento && (
+          <>
+            {feature.properties?.bioma && (
+              <div>
+                <strong>Bioma:</strong> {feature.properties.bioma}
+              </div>
+            )}
+            {feature.properties?.municipio && (
+              <div>
+                <strong>Município:</strong> {feature.properties.municipio}
+              </div>
+            )}
+            {feature.properties?.area_ha && (
+              <div>
+                <strong>Área (ha):</strong> {feature.properties.area_ha}
+              </div>
+            )}
+            {feature.properties?.datadetec && (
+              <div>
+                <strong>Data de Detecção:</strong>{" "}
+                {new Date(feature.properties.datadetec).toLocaleDateString()}
               </div>
             )}
           </>
@@ -68,7 +101,10 @@ const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: Featur
 
   if (geometry.type === "Polygon") {
     return (
-      <Polygon positions={convertedCoordinates} pathOptions={{ color: parentColor }}>
+      <Polygon
+        positions={convertedCoordinates}
+        pathOptions={{ color: parentColor }}
+      >
         {popupContent}
       </Polygon>
     );
@@ -78,7 +114,11 @@ const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: Featur
     return (
       <>
         {convertedCoordinates.map((coords, index) => (
-          <Polygon key={index} positions={coords} pathOptions={{ color: parentColor }}>
+          <Polygon
+            key={index}
+            positions={coords}
+            pathOptions={{ color: parentColor }}
+          >
             {popupContent}
           </Polygon>
         ))}

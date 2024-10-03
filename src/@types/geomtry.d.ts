@@ -23,6 +23,11 @@ export interface Feature {
     NOM_MUNICI?: string;
     COD_ESTADO?: string;
     nome?: string;
+    fonte?: string;
+    bioma?: string;
+    municipio?: string;
+    area_ha?: number;
+    datadetec?: string;
   };
   geometry: Geometry;
 }
