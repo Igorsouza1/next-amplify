@@ -6,9 +6,6 @@ import dynamic from "next/dynamic";
 
 export default async function Map() {
 
-   
-
-
     const Map = dynamic(() => import("@/components/mapleaft/mapleaft"), {
         ssr: false
       });

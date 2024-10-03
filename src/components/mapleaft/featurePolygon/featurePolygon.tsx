@@ -17,7 +17,9 @@ const FeaturePolygon = ({ feature, parentName, parentSize, parentColor }: Featur
   if (!convertedCoordinates) return null;
 
   // Verifica se o nome das propriedades é "Propriedades"
-  const isPropriedades = feature.properties && parentName === "Propriedades";
+  const isPropriedades = feature.properties && parentName === "Propriedades" || parentName === "MultiFeature";
+  console.log(isPropriedades);
+  console.log(parentName)
 
   const popupContent = (
     <Popup>

@@ -6,7 +6,6 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import FeaturePolygon from "./featurePolygon/featurePolygon";
-import { useFetchGeometryData } from "@/hooks/useFetchGeometryData"; // Importando o hook personalizado.
 
 import { useShapeContext } from "@/Context/shapeContext";
 
