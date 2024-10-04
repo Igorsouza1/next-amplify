@@ -23,7 +23,7 @@ export function Sidebar() {
             <DataIcon className="w-6 h-6" />
           </Button>
         </Link>
-        <Link href="/config" passHref>
+        <Link href="/relatorio" passHref>
           <Button variant="ghost" size="icon">
             <SlidersVerticalIcon className="w-6 h-6" />
           </Button>
