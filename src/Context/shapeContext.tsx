@@ -9,6 +9,7 @@ type ShapeContextType = {
   activeShapes: GeometryData[];
   addShape: (shape: GeometryData) => void;
   removeShape: (shapeId: string) => void;
+  loading: boolean;
 };
 
 const ShapeContext = createContext<ShapeContextType | undefined>(undefined);
@@ -17,10 +18,12 @@ export const ShapeProvider = ({ children }: { children: ReactNode }) => {
   const fetchedShapes = useFetchGeometryData(); // Chama o hook que busca os shapes
   const [availableShapes, setAvailableShapes] = useState<GeometryData[]>([]);
   const [activeShapes, setActiveShapes] = useState<GeometryData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (fetchedShapes.length > 0) {
       setAvailableShapes(fetchedShapes); // Atualiza o estado com os dados buscados
+      setLoading(false); // Desativa o estado de carregamento
     }
   }, [fetchedShapes]);
 
@@ -33,7 +36,7 @@ export const ShapeProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <ShapeContext.Provider value={{ availableShapes, activeShapes, addShape, removeShape }}>
+    <ShapeContext.Provider value={{ availableShapes, activeShapes, addShape, removeShape, loading }}>
       {children}
     </ShapeContext.Provider>
   );

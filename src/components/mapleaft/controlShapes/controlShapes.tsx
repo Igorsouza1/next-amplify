@@ -3,19 +3,23 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useShapeContext } from "@/Context/shapeContext"; // Importando o contexto de shapes
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+
 
 const ControlShapes = () => {
-  const { availableShapes, activeShapes, addShape, removeShape } = useShapeContext();
+  const { availableShapes, activeShapes, addShape, removeShape, loading } = useShapeContext();
   const [selectedShapes, setSelectedShapes] = useState<string[]>(activeShapes.map(shape => shape.id));
+
+  useEffect(() => {
+    setSelectedShapes(activeShapes.map((shape) => shape.id));
+  }, [activeShapes]);
 
   const handleCheckboxChange = (shapeId: string) => {
     if (selectedShapes.includes(shapeId)) {
-      // Se o shape já está selecionado, remover
       removeShape(shapeId);
       setSelectedShapes(selectedShapes.filter(id => id !== shapeId));
     } else {
-      // Se o shape não está selecionado, adicionar
       const selectedShape = availableShapes.find((shape) => shape.id === shapeId);
       if (selectedShape) {
         addShape(selectedShape);
@@ -23,6 +27,8 @@ const ControlShapes = () => {
       }
     }
   };
+
+  if (loading) return <div>Loading...</div>; // Mostra "Loading..." enquanto os dados são carregados
 
   return (
     <div className="w-full max-w-sm mx-auto">
@@ -44,5 +50,4 @@ const ControlShapes = () => {
     </div>
   );
 };
-
 export default ControlShapes;
