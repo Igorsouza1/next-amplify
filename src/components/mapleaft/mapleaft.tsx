@@ -23,7 +23,7 @@ const MapLeaflet = () => {
   return (
     <MapContainer
       center={[-21.327773, -56.694734]}
-      zoom={10}
+      zoom={10} 
       style={{ height: "100vh", width: "100%" }}
     >
       <LayersControl position="topright">
