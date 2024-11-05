@@ -1,6 +1,6 @@
 'use client'
 
-import useAdminCheck from "@/hooks/use-admincheck";
+import useAdminCheck from "@/hooks/useAdminCheck";
 import { Button } from "@/components/ui/button";
 import Link from 'next/link'; // Importa o Link do Next.js
 

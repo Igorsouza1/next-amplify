@@ -1,7 +1,7 @@
 'use client'
 
 import { createPost } from "@/app/_actions/actions";
-import useAdminCheck from "@/hooks/use-admincheck"; // Certifique-se de ajustar o caminho conforme necessário
+import useAdminCheck from "@/hooks/useAdminCheck"; // Certifique-se de ajustar o caminho conforme necessário
 
 export default function Add() {
   const isAdmin = useAdminCheck();
