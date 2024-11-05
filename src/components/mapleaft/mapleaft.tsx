@@ -1,21 +1,20 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { TileLayer, LayersControl } from "react-leaflet"; // Importando LayersControl
+import { TileLayer, LayersControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import FeaturePolygon from "./featurePolygon/featurePolygon";
-
 import { useShapeContext } from "@/Context/shapeContext";
 
-// Load MapContainer dynamically with SSR disabled
+// Carregamento dinâmico do MapContainer para SSR
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   { ssr: false }
 );
 
-const { BaseLayer } = LayersControl; // Alias para LayersControl.BaseLayer
+const { BaseLayer } = LayersControl;
 
 const MapLeaflet = () => {
   const { activeShapes } = useShapeContext();
@@ -23,11 +22,11 @@ const MapLeaflet = () => {
   return (
     <MapContainer
       center={[-21.327773, -56.694734]}
-      zoom={10} 
+      zoom={10}
       style={{ height: "100vh", width: "100%" }}
     >
       <LayersControl position="topright">
-        {/* Tile layers de diferentes fontes */}
+        {/* Camadas de Tile com diferentes fontes */}
         <BaseLayer checked name="OpenStreetMap">
           <TileLayer
             attribution='&copy; OpenStreetMap contributors'
@@ -49,17 +48,13 @@ const MapLeaflet = () => {
           />
         </BaseLayer>
 
-        {/* Você pode adicionar outras camadas base aqui */}
-
-        {/* Renderiza os polígonos (shapes) */}
+        {/* Renderização dos polígonos ativos no contexto */}
         {activeShapes.map((shape) =>
           shape.features.map((feature) => (
             <FeaturePolygon
               key={feature.id}
               feature={feature}
-              parentName={shape.name}
-              parentSize={shape.size}
-              parentColor={shape.color}
+              parentName={shape.name} // Nome para identificar o conjunto de features
             />
           ))
         )}

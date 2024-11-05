@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenuUser } from "@/components/dropdown/dropdown";
 import Link from 'next/link'; // Importa o Link do Next.js
-import IsAdminIcon from "@/components/sidebar/adminIcon/isAdminIcon";
+import IsAdminIcon from "@/components/sidebar/adminIcon/IsAdminIcon";
 
 interface IconProps {
   className?: string;

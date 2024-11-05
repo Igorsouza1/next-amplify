@@ -7,40 +7,24 @@ import React from "react";
 interface FeaturePolygonProps {
   feature: Feature;
   parentName: string;
-  parentSize: string;
-  parentColor: string;
 }
 
-const FeaturePolygon = ({
-  feature,
-  parentName,
-  parentSize,
-  parentColor,
-}: FeaturePolygonProps) => {
+const FeaturePolygon = ({ feature, parentName }: FeaturePolygonProps) => {
   const geometry = feature.geometry;
   const convertedCoordinates = convertGeoJSONToLeaflet(geometry);
 
   if (!convertedCoordinates) return null;
 
-  // Verifica se o nome das propriedades é "Propriedades"
-  const isPropriedades =
-    parentName === "Propriedades" || parentName === "Novas Propriedades";
-  const isDesmatamento =
-    parentName === "Desmatamento" || parentName === "Desmatamento Bacia";
-  const isFire = parentName === "Fogo";
-
+  // Define o conteúdo do popup com base no tipo de `parentName`
   const popupContent = (
     <Popup>
       <div className="flex flex-col">
         <div>
           <strong>Nome:</strong> {parentName}
         </div>
-        {/* <div>
-          <strong>Tamanho:</strong> {parentSize} ha
-        </div> */}
 
-        {/* Exibir somente se for "Propriedades" */}
-        {isPropriedades && (
+        {/* Exibir informações específicas com base no tipo de feature */}
+        {parentName === "Propriedades" && (
           <>
             {feature.properties?.NOM_MUNICI && (
               <div>
@@ -57,7 +41,6 @@ const FeaturePolygon = ({
                 <strong>CAR:</strong> {feature.properties.COD_IMOVEL}
               </div>
             )}
-
             {feature.properties?.nome && (
               <div>
                 <strong>Nome:</strong> {feature.properties.nome}
@@ -65,14 +48,13 @@ const FeaturePolygon = ({
             )}
             {feature.properties?.NUM_AREA && (
               <div>
-                <strong>Tamanho:</strong>{" "}
-                {feature.properties.NUM_AREA.toFixed(2)} Ha
+                <strong>Tamanho:</strong> {feature.properties.NUM_AREA.toFixed(2)} Ha
               </div>
             )}
           </>
         )}
 
-        {isDesmatamento && (
+        {parentName === "Desmatamento" && (
           <>
             {feature.properties?.bioma && (
               <div>
@@ -98,11 +80,11 @@ const FeaturePolygon = ({
           </>
         )}
 
-        {isFire && (
+        {parentName === "Fogo" && (
           <>
             {feature.properties?.sub_area && (
               <div>
-                <strong>Area:</strong> {feature.properties.sub_area} ha
+                <strong>Área:</strong> {feature.properties.sub_area} ha
               </div>
             )}
           </>
@@ -111,11 +93,12 @@ const FeaturePolygon = ({
     </Popup>
   );
 
+  // Renderiza o polígono baseado no tipo de geometria
   if (geometry.type === "Polygon") {
     return (
       <Polygon
         positions={convertedCoordinates}
-        pathOptions={{ color: parentColor }}
+        pathOptions={{ color: "blue" }} // Cor padrão para o polígono
       >
         {popupContent}
       </Polygon>
@@ -129,7 +112,7 @@ const FeaturePolygon = ({
           <Polygon
             key={index}
             positions={coords}
-            pathOptions={{ color: parentColor }}
+            pathOptions={{ color: "blue" }} // Cor padrão para cada sub-polígono
           >
             {popupContent}
           </Polygon>

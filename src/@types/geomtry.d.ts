@@ -29,6 +29,16 @@ export interface Feature {
     area_ha?: number;
     datadetec?: string;
     sub_area?: number;
+    
+    // Novas propriedades de desmatamento, propriedades e estradas
+    Municipio?: string;
+    AreaHa?: number;
+    DataDetec?: string;
+    VPressao?: string;
+    Cod_Imovel?: string;
+    Num_Area?: number;
+    DescSeg?: string | null;
+    TipoPNV?: string | null;
   };
   geometry: Geometry;
 }
@@ -36,7 +46,17 @@ export interface Feature {
 export interface GeometryData {
   id: string;
   name: string;
-  size: string;
-  color: string;
+  type: string;
+  size?: string;
+  color?: string;
+  geometry: Geometry;
   features: Feature[];
+  municipio?: string;
+  areaHa?: number;
+  dataDetec?: string;
+  vPressao?: string;
+  codImovel?: string;
+  numArea?: number;
+  descSeg?: string | null;
+  tipoPNV?: string | null;
 }

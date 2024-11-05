@@ -1,28 +1,23 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
-  Post: a.model({
-    title: a.string().required(),
-    comments: a.hasMany('Comment', 'postId'),  // 'postId' é a chave estrangeira no modelo Comment
-    owner: a.string().authorization(allow => [allow.owner().to(['read', 'delete'])]),
-  }).authorization(allow => [allow.publicApiKey().to(["read"]), allow.owner()]),
-
-  Comment: a.model({
-    postId: a.string().required(),
-    content: a.string().required(),
-    post: a.belongsTo('Post', 'postId'),  // 'postId' é a chave estrangeira
-    owner: a.string().authorization(allow => [allow.owner().to(['read', 'delete'])]),
-  }),
-
-  InitialGeometry: a.model({
-    type: a.string(),
-    name: a.string(),
-    size: a.string(),
-    crs: a.string(),
-    color: a.string(),
-    features: a.json(),
+  GeoEntity: a.model({
+    PK: a.string(),
+    SK: a.string(),
+    Geometry: a.json(),
+    Name: a.string(),
+    Type: a.string(),
+    Features: a.json(),
+    Municipio: a.string(),
+    AreaHa: a.string(),
+    DataDetec: a.string(),
+    VPressao: a.string(),
+    Cod_Imovel: a.string(),
+    Num_Area: a.string(),
+    DescSeg: a.string(),
+    TipoPNV: a.string(),
   }).authorization(allow => [allow.guest().to(["read"]), allow.owner()]),
-}).authorization(allow => [allow.guest().to(["read"]), allow.owner()])
+}).authorization(allow => [allow.guest().to(["read"]), allow.owner()]);
 
 export type Schema = ClientSchema<typeof schema>;
 
@@ -35,4 +30,3 @@ export const data = defineData({
     },
   },
 });
-
