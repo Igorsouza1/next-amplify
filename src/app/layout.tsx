@@ -20,7 +20,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <NavBar isSignedIn={await isAuthenticated()} />
+        {/* <NavBar isSignedIn={await isAuthenticated()} /> */}
         <Auth>
           
           <ShapeProvider>

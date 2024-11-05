@@ -1,12 +1,16 @@
+
+
 import { Button } from "@/components/ui/button";
 import { DropdownMenuUser } from "@/components/dropdown/dropdown";
 import Link from 'next/link'; // Importa o Link do Next.js
+import IsAdminIcon from "@/components/sidebar/adminIcon/isAdminIcon";
 
 interface IconProps {
   className?: string;
 }
 
 export function Sidebar() {
+
   return (
     <div className="flex flex-col items-center w-16 h-screen border-r bg-basebackground z-10">
       <div className="mt-4 border-b w-full pb-2 flex flex-col justify-center items-center">
@@ -28,6 +32,7 @@ export function Sidebar() {
             <SlidersVerticalIcon className="w-6 h-6" />
           </Button>
         </Link>
+        <IsAdminIcon />
       </div>
       <div className="flex flex-col items-center mt-auto py-4 space-y-4">
         <Link href="/help" passHref>
@@ -152,4 +157,7 @@ function HelpIcon(props: IconProps) {
     </svg>
   );
 }
+
+
+
 

@@ -20,7 +20,7 @@ const schema = a.schema({
     size: a.string(),
     crs: a.string(),
     color: a.string(),
-    geometry: a.json(),
+    features: a.json(),
   }).authorization(allow => [allow.guest().to(["read"]), allow.owner()]),
 }).authorization(allow => [allow.guest().to(["read"]), allow.owner()])
 
