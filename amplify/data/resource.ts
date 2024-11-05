@@ -19,6 +19,7 @@ const schema = a.schema({
     name: a.string(),
     size: a.string(),
     crs: a.string(),
+    color: a.string(),
     geometry: a.json(),
   }).authorization(allow => [allow.guest().to(["read"]), allow.owner()]),
 }).authorization(allow => [allow.guest().to(["read"]), allow.owner()])
