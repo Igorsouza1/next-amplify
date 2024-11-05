@@ -1,32 +1,27 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
-import { addUserToGroup } from "./add-user-to-group/resource"
-
 
 const schema = a.schema({
+  Post: a.model({
+    title: a.string().required(),
+    comments: a.hasMany('Comment', 'postId'),  // 'postId' é a chave estrangeira no modelo Comment
+    owner: a.string().authorization(allow => [allow.owner().to(['read', 'delete'])]),
+  }).authorization(allow => [allow.publicApiKey().to(["read"]), allow.owner()]),
+
+  Comment: a.model({
+    postId: a.string().required(),
+    content: a.string().required(),
+    post: a.belongsTo('Post', 'postId'),  // 'postId' é a chave estrangeira
+    owner: a.string().authorization(allow => [allow.owner().to(['read', 'delete'])]),
+  }),
+
   InitialGeometry: a.model({
     type: a.string(),
     name: a.string(),
     size: a.string(),
-    color: a.string(),
-    features: a.json(),
-  }).authorization(allow => [allow.authenticated().to(["read", "create", "update", "delete"]), allow.owner()]),
-
-
-  addUserToGroup: a
-    .mutation()
-    .arguments({
-      userId: a.string().required(),
-      groupName: a.string().required(),
-    })
-    .authorization((allow) => [allow.group("ADMINS")])
-    .handler(a.handler.function(addUserToGroup))
-    .returns(a.json())
-
-
-}).authorization(allow => [allow.authenticated().to(["read", "create", "update", "delete"]), allow.owner()])
-
-
-
+    crs: a.string(),
+    geometry: a.json(),
+  }).authorization(allow => [allow.guest().to(["read"]), allow.owner()]),
+}).authorization(allow => [allow.guest().to(["read"]), allow.owner()])
 
 export type Schema = ClientSchema<typeof schema>;
 
@@ -39,7 +34,4 @@ export const data = defineData({
     },
   },
 });
-
-
-
 
