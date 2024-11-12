@@ -47,7 +47,7 @@ export async function getInitialGeometry() {
         selectionSet: ['id' , 'name', 'features', 'size', 'color'],
         authMode: 'userPool'
       }); 
-    //   console.log('InitialGeometry', InitialGeometry)
+    console.log('InitialGeometry', InitialGeometry)
       return InitialGeometry;
     } catch (error) {
         console.error('Error getting initial geometry', error)
