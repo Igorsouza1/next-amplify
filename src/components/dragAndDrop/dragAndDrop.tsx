@@ -3,9 +3,10 @@
 import { useState, useCallback } from 'react'
 import { FileText } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { FeatureCollection } from "geojson";
 
 export default function DragAndDrop() {
-  const [geoJsonData, setGeoJsonData] = useState<any>(null)
+  const [geoJsonData, setGeoJsonData] = useState<FeatureCollection | null>(null);
   const [isDragging, setIsDragging] = useState(false)
   
 
