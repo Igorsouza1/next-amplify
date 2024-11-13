@@ -4,10 +4,12 @@ import { useState, useCallback } from 'react'
 import { FileText } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FeatureCollection } from "geojson";
+import useAdminCheck from '@/hooks/useAdminCheck';
 
 export default function DragAndDrop() {
   const [geoJsonData, setGeoJsonData] = useState<FeatureCollection | null>(null);
   const [isDragging, setIsDragging] = useState(false)
+  const isAdmin = useAdminCheck()
   
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -41,6 +43,14 @@ export default function DragAndDrop() {
       alert('Please drop a valid GeoJSON file')
     }
   }, [])
+
+  if(!isAdmin){
+    return (
+          <div className="flex items-center justify-center min-h-screen">
+            <p className="text-red-500">Acesso negado. Você não tem permissão para acessar esta página.</p>
+          </div>
+        );
+  }
 
   return (
     <div className="p-4 max-w-md mx-auto">

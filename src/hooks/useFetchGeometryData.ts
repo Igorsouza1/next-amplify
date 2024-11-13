@@ -19,7 +19,6 @@ export const useFetchGeometryData = () => {
         }));
         setGeometryData(parsedData?.map(item => ({
           ...item,
-          size: item.size ?? '',
           color: item.color ?? '',
         })) ?? []);
       } catch (error) {
