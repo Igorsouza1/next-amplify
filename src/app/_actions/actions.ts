@@ -1,13 +1,13 @@
-"use server"
+"use server";
 
-import { cookieBasedClient } from "@/utils/amplify-utils"
-import { redirect } from "next/navigation"
+import { cookieBasedClient } from "@/utils/amplify-utils";
+import { redirect } from "next/navigation";
 
 
 
 type CategoryType = "Desmatamento" | "Fogo" | "Atividades" | "Propriedades" | "Outros";
 
-let categoryCounters: { [key in CategoryType]?: number } = {};
+const categoryCounters: { [key in CategoryType]?: number } = {}; // Mudei de let para const
 
 // Função para obter o próximo ID sequencial para uma categoria específica
 function getNextSequentialId(category: CategoryType): string {
