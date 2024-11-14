@@ -103,9 +103,7 @@ export default function DragAndDrop() {
             <div className="mt-6 space-y-4">
               <h3 className="text-lg font-semibold">GeoJSON Information:</h3>
               <div className="space-y-2 text-sm">
-                <p><span className="font-medium">ID:</span> {geoJsonData.id}</p>
                 <p><span className="font-medium">Name:</span> {geoJsonData.name}</p>
-                <p><span className="font-medium">Size:</span> {geoJsonData.size}</p>
                 <p><span className="font-medium">Color:</span> {geoJsonData.color}</p>
                 <p><span className="font-medium">Total Features:</span> {geoJsonData.features.length}</p>
               </div>
