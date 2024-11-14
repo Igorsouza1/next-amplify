@@ -36,7 +36,7 @@ export interface Feature {
 export interface GeometryData {
   id: string;
   name: string;
-  size: string;
   color: string;
+  category: string;
   features: Feature[];
 }

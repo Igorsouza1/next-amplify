@@ -9,6 +9,7 @@ type ShapeContextType = {
   activeShapes: GeometryData[];
   addShape: (shape: GeometryData) => void;
   removeShape: (shapeId: string) => void;
+  setAvailableShapes: React.Dispatch<React.SetStateAction<GeometryData[]>>; // Adiciona o setter para availableShapes
   loading: boolean;
 };
 
@@ -36,7 +37,7 @@ export const ShapeProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <ShapeContext.Provider value={{ availableShapes, activeShapes, addShape, removeShape, loading }}>
+    <ShapeContext.Provider value={{ availableShapes, activeShapes, addShape, removeShape, setAvailableShapes, loading }}>
       {children}
     </ShapeContext.Provider>
   );

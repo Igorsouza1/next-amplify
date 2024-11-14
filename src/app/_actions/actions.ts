@@ -3,53 +3,98 @@
 import { cookieBasedClient } from "@/utils/amplify-utils"
 import { redirect } from "next/navigation"
 
+
+
+type CategoryType = "Desmatamento" | "Fogo" | "Atividades" | "Propriedades" | "Outros";
+
+let categoryCounters: { [key in CategoryType]?: number } = {};
+
+// Função para obter o próximo ID sequencial para uma categoria específica
+function getNextSequentialId(category: CategoryType): string {
+    if (!categoryCounters[category]) {
+        // Inicializa o contador para a categoria se ainda não existir
+        categoryCounters[category] = 1;
+    } else {
+        // Incrementa o contador para a categoria
+        categoryCounters[category]++;
+    }
+    // Retorna o ID com padding opcional (ex.: "0001") para manter consistência
+    return categoryCounters[category]!.toString().padStart(4, '0');
+}
+
 export async function createPost(formData: FormData) {
-    // console.log('formData', formData);
     try {
-        // const geometryString = formData.get('geometry')?.toString() || ''; // Remove leading/trailing whitespace
-
-        // // Validate that the geometry string is potentially a JSON object
-        // if (!geometryString.startsWith('{') && !geometryString.startsWith('[')) {
-        //     console.error('Invalid JSON format for geometry: not starting with { or [');
-        //     return;
-        // }
-
-        // // Attempt to parse the geometry string into a JSON object
-        // let geometryObject;
-        // try {
-        //     geometryObject = JSON.parse(geometryString);
-        // } catch (parseError) {
-        //     console.error('Invalid JSON format for geometry:', parseError);
-        //     return; // Exit the function early if parsing fails
-        // }
-
-        const { data } = await cookieBasedClient.models.InitialGeometry.create({
-            type: formData.get('type')?.toString() || '',
-            name: formData.get('name')?.toString() || '',
-            size: formData.get('size')?.toString() || '',
-            color: formData.get('color')?.toString() || '',
-            // features is now a parsed JSON object
-            features: formData.get('features')?.toString() || '',
-        });
+        const category = formData.get('category')?.toString() as CategoryType;
+        const validCategories = ["Desmatamento", "Fogo", "Atividades", "Propriedades", "Outros"];
+        if (!validCategories.includes(category)) throw new Error(`Invalid category: ${category}`);
         
-        console.log('Data created', data);
-        // redirect('/map')
+        const type = formData.get('type')?.toString() || '';
+        const name = formData.get('name')?.toString() || '';
+        const color = formData.get('color')?.toString() || '';
+        const features = JSON.stringify(
+            formData.get('features') ? JSON.parse(formData.get('features') as string) : {}
+        );
 
+        const PK = `CATEGORY#${category}`;
+        const SK = `category#${getNextSequentialId(category)}`;
+        
+        const { data, errors } = await cookieBasedClient.models.InitialGeometry.create({
+            PK,
+            SK,
+            category,
+            type,
+            name,
+            color,
+            features
+        });
+
+        if (errors) {
+            console.error('Error details:', errors);
+        } else {
+            console.log('Data created successfully:', data);
+        }
     } catch (error) {
-        console.error('Error creating post', error);
+        console.error('Failed to create post:', error);
     }
 }
 
 
+
+
+// PEGAR AS GEOMETRIAS INICIAIS
 export async function getInitialGeometry() {
     try{
     const {data: InitialGeometry} = await cookieBasedClient.models.InitialGeometry.list({
-        selectionSet: ['id' , 'name', 'features', 'size', 'color'],
+        selectionSet: ['id' , 'name', 'features', 'color'],
         authMode: 'userPool'
       }); 
-    console.log('InitialGeometry', InitialGeometry)
+    // console.log('InitialGeometry', InitialGeometry)
       return InitialGeometry;
     } catch (error) {
         console.error('Error getting initial geometry', error)
     }
 }
+
+
+
+
+export async function deleteShapeAction(id: string) {
+    try {
+  
+      // Execução da operação de exclusão
+      const { data, errors } = await cookieBasedClient.models.InitialGeometry.delete({
+        id,
+      });
+  
+      if (errors) {
+        console.error("Erro ao excluir o item:", errors);
+        throw new Error("Erro ao excluir o item.");
+      }
+  
+      console.log("Item excluído com sucesso:", data);
+      return data;
+    } catch (error) {
+      console.error("Erro ao executar deleteShapeAction:", error);
+      throw new Error("Erro ao executar deleteShapeAction.");
+    }
+  }

@@ -9,18 +9,22 @@ export const useFetchGeometryData = () => {
     const fetchData = async () => {
       try {
         const data = await getInitialGeometry();
-        const parsedData = data?.map((item) => ({
-          ...item,
-          name: item.name ?? "",
-          features:
+
+        const parsedData = data?.map((item) => {
+          const features =
             typeof item.features === "string"
               ? JSON.parse(item.features).features
-              : item.features,
-        }));
-        setGeometryData(parsedData?.map(item => ({
-          ...item,
-          color: item.color ?? '',
-        })) ?? []);
+              : item.features;
+
+          return {
+            id: item.id,
+            name: item.name ?? "",
+            color: item.color ?? "",
+            features: features ?? [],
+          } as GeometryData;
+        });
+
+        setGeometryData(parsedData ?? []);
       } catch (error) {
         console.error("Erro ao obter dados de geometria:", error);
       }
