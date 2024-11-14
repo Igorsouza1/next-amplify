@@ -6,7 +6,7 @@ const schema = a.schema({
     PK: a.string(), // Primary Key
     SK: a.string(), // Sort Key
     type: a.string(),
-    category: a.enum( ["Desmatamento", "Fogo", "Ações", "Propriedades"]),
+    category: a.enum( ["Desmatamento", "Fogo", "Atividades", "Propriedades"]),
     name: a.string(),
     color: a.string(),
     features: a.json(), // JSON para dados GeoJSON
