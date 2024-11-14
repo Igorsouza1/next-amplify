@@ -7,14 +7,12 @@ import React from "react";
 interface FeaturePolygonProps {
   feature: Feature;
   parentName: string;
-  parentSize: string;
   parentColor: string;
 }
 
 const FeaturePolygon = ({
   feature,
   parentName,
-  parentSize,
   parentColor,
 }: FeaturePolygonProps) => {
   const geometry = feature.geometry;

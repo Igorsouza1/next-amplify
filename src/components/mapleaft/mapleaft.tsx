@@ -58,7 +58,6 @@ const MapLeaflet = () => {
               key={feature.id}
               feature={feature}
               parentName={shape.name}
-              parentSize={shape.size}
               parentColor={shape.color}
             />
           ))
