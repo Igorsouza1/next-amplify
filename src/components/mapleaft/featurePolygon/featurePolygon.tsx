@@ -82,9 +82,9 @@ const FeaturePolygon = ({
                 <strong>Município:</strong> {feature.properties.municipio}
               </div>
             )}
-            {feature.properties?.area_ha && (
+            {feature.properties?.areaha && (
               <div>
-                <strong>Área (ha):</strong> {feature.properties.area_ha}
+                <strong>Área (ha):</strong> {feature.properties.areaha}
               </div>
             )}
             {feature.properties?.datadetec && (

@@ -7,6 +7,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { GeometryData, Feature } from '@/@types/geomtry'
 import useAdminCheck from '@/hooks/useAdminCheck'
 import { createPost } from '@/app/_actions/actions'
+import { isValidGeometryData } from '@/utils/geojson-utils'
 
 const categories = ["Desmatamento", "Fogo", "Atividades", "Propriedades", "Outros"]
 
@@ -48,9 +49,10 @@ export default function DragAndDrop() {
       reader.onload = (event) => {
         try {
           const json = JSON.parse(event.target?.result as string) as GeometryData
-          setGeoJsonData(json)
-          setName(json.name)        // Define o estado inicial de `name`
-          setColor(json.color)      // Define o estado inicial de `color`
+          if(isValidGeometryData(json)) {
+            setGeoJsonData(json)
+            setName(json.name)
+          }
         } catch (error) {
           console.error('Error parsing GeoJSON:', error)
           setGeoJsonData(null)

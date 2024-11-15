@@ -1,17 +1,47 @@
+/**
+ * Representa uma coordenada no formato GeoJSON.
+ * [longitude, latitude]
+ */
 export type Coordinate = [number, number];
-export type LinearRing = Coordinate[];
-export type PolygonType = LinearRing[];
-export type MultiPolygon = PolygonType[];
 
+/**
+ * Representa um anel linear (LinearRing), usado em polígonos.
+ * É um array de coordenadas.
+ */
+export type LinearRing = Coordinate[];
+
+/**
+ * Representa um polígono no formato GeoJSON.
+ * É um array de LinearRings.
+ */
+export type Polygon = LinearRing[];
+
+/**
+ * Representa um MultiPolygon no formato GeoJSON.
+ * É um array de polígonos.
+ */
+export type MultiPolygon = Polygon[];
+
+/**
+ * Define os tipos válidos de geometria no GeoJSON.
+ */
+export type GeometryType = "Point" | "LineString" | "Polygon" | "MultiPoint" | "MultiLineString" | "MultiPolygon";
+
+/**
+ * Representa uma geometria no formato GeoJSON.
+ */
 export interface Geometry {
-  type: string;
-  coordinates: PolygonType | MultiPolygon;
+  type: GeometryType;
+  coordinates: Coordinate | Coordinate[] | Polygon | MultiPolygon;
 }
 
+/**
+ * Representa uma Feature no formato GeoJSON.
+ */
 export interface Feature {
-  id: string;
   type: "Feature";
   properties: {
+    [key: string]: any; // Propriedades dinâmicas suportam diferentes contextos
     COD_TEMA?: string;
     NOM_TEMA?: string;
     COD_IMOVEL?: string;
@@ -26,17 +56,19 @@ export interface Feature {
     fonte?: string;
     bioma?: string;
     municipio?: string;
-    area_ha?: number;
+    areaha?: number;
     datadetec?: string;
     sub_area?: number;
   };
   geometry: Geometry;
 }
 
+/**
+ * Representa um conjunto de Features com metadados adicionais.
+ */
 export interface GeometryData {
-  id: string;
   name: string;
   color: string;
-  category: string;
+  category: "Atividades" | "Desmatamento" | "Fogo" | "Outros" | "Propriedades";
   features: Feature[];
 }
