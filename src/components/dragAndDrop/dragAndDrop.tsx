@@ -17,6 +17,9 @@ const categories = ['Desmatamento', 'Fogo', 'Atividades', 'Propriedades', 'Outro
 const filteredProperties = [
   'fonte', 'municipio', 'areaha', 'datadetec', 'vpressao', 'cod_imovel',
   'num_area', 'DescSeg', 'TipoPNV', 'CODIGO', 'OBJECTID', 'codealerta',
+  'FONTE', 'MUNICIPIO', 'AREAHA', 'DATADETEC', 'VPRESSAO', 'COD_IMOVEL', 'COD_IMOVEL',
+  'NUM_AREA', 'DESCSEG', 'TIPOPNV', 'CODIGO', 'OBJECTID', 'CODEALERTA',
+  'NOME_PROP', 'nome', 'NOM_MUNICI'
 ];
 
 export default function DragAndDrop() {

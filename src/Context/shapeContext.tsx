@@ -9,7 +9,9 @@ type ShapeContextType = {
   activeShapes: GeometryData[];
   addShape: (shape: GeometryData) => void;
   removeShape: (shapeId: string) => void;
-  setAvailableShapes: React.Dispatch<React.SetStateAction<GeometryData[]>>; // Adiciona o setter para availableShapes
+  setAvailableShapes: React.Dispatch<React.SetStateAction<GeometryData[]>>;
+  selectedFeature: Record<string, any> | null; // Novo estado para armazenar a feature clicada
+  setSelectedFeature: React.Dispatch<React.SetStateAction<Record<string, any> | null>>; // Setter para o estado da feature clicada
   loading: boolean;
 };
 
@@ -19,6 +21,7 @@ export const ShapeProvider = ({ children }: { children: ReactNode }) => {
   const fetchedShapes = useFetchGeometryData(); // Chama o hook que busca os shapes
   const [availableShapes, setAvailableShapes] = useState<GeometryData[]>([]);
   const [activeShapes, setActiveShapes] = useState<GeometryData[]>([]);
+  const [selectedFeature, setSelectedFeature] = useState<Record<string, any> | null>(null); // Estado para a feature clicada
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +40,18 @@ export const ShapeProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <ShapeContext.Provider value={{ availableShapes, activeShapes, addShape, removeShape, setAvailableShapes, loading }}>
+    <ShapeContext.Provider
+      value={{
+        availableShapes,
+        activeShapes,
+        addShape,
+        removeShape,
+        setAvailableShapes,
+        selectedFeature,
+        setSelectedFeature,
+        loading,
+      }}
+    >
       {children}
     </ShapeContext.Provider>
   );

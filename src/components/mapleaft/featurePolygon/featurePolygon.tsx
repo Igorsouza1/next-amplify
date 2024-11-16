@@ -1,8 +1,8 @@
-// components/FeaturePolygon.tsx
-import { Polygon, Popup } from "react-leaflet";
-import { Feature } from "@/@types/geomtry";
-import { convertGeoJSONToLeaflet } from "@/utils/geojson-utils";
-import React from "react";
+import { Polygon, Popup } from 'react-leaflet';
+import { Feature } from '@/@types/geomtry';
+import { convertGeoJSONToLeaflet } from '@/utils/geojson-utils';
+import React from 'react';
+import { useShapeContext } from '@/Context/shapeContext';
 
 interface FeaturePolygonProps {
   feature: Feature;
@@ -10,22 +10,12 @@ interface FeaturePolygonProps {
   parentColor: string;
 }
 
-const FeaturePolygon = ({
-  feature,
-  parentName,
-  parentColor,
-}: FeaturePolygonProps) => {
+const FeaturePolygon = ({ feature, parentName, parentColor }: FeaturePolygonProps) => {
   const geometry = feature.geometry;
   const convertedCoordinates = convertGeoJSONToLeaflet(geometry);
+  const { setSelectedFeature } = useShapeContext();
 
   if (!convertedCoordinates) return null;
-
-  // Verifica se o nome das propriedades é "Propriedades"
-  const isPropriedades =
-    parentName === "Propriedades" || parentName === "Novas Propriedades";
-  const isDesmatamento =
-    parentName === "Desmatamento" || parentName === "Desmatamento Bacia";
-  const isFire = parentName === "Fogo";
 
   const popupContent = (
     <Popup>
@@ -33,94 +23,25 @@ const FeaturePolygon = ({
         <div>
           <strong>Nome:</strong> {parentName}
         </div>
-        {/* <div>
-          <strong>Tamanho:</strong> {parentSize} ha
-        </div> */}
-
-        {/* Exibir somente se for "Propriedades" */}
-        {isPropriedades && (
-          <>
-            {feature.properties?.NOM_MUNICI && (
-              <div>
-                <strong>Município:</strong> {feature.properties.NOM_MUNICI}
-              </div>
-            )}
-            {feature.properties?.SITUACAO && (
-              <div>
-                <strong>Status:</strong> {feature.properties.SITUACAO}
-              </div>
-            )}
-            {feature.properties?.COD_IMOVEL && (
-              <div>
-                <strong>CAR:</strong> {feature.properties.COD_IMOVEL}
-              </div>
-            )}
-
-            {feature.properties?.nome && (
-              <div>
-                <strong>Nome:</strong> {feature.properties.nome}
-              </div>
-            )}
-            {feature.properties?.NUM_AREA && (
-              <div>
-                <strong>Tamanho:</strong>{" "}
-                {feature.properties.NUM_AREA.toFixed(2)} Ha
-              </div>
-            )}
-          </>
-        )}
-
-        {isDesmatamento && (
-          <>
-            {feature.properties?.bioma && (
-              <div>
-                <strong>Bioma:</strong> {feature.properties.bioma}
-              </div>
-            )}
-            {feature.properties?.municipio && (
-              <div>
-                <strong>Município:</strong> {feature.properties.municipio}
-              </div>
-            )}
-            {feature.properties?.areaha && (
-              <div>
-                <strong>Área (ha):</strong> {feature.properties.areaha}
-              </div>
-            )}
-            {feature.properties?.datadetec && (
-              <div>
-                <strong>Data de Detecção:</strong>{" "}
-                {new Date(feature.properties.datadetec).toLocaleDateString()}
-              </div>
-            )}
-          </>
-        )}
-
-        {isFire && (
-          <>
-            {feature.properties?.sub_area && (
-              <div>
-                <strong>Area:</strong> {feature.properties.sub_area} ha
-              </div>
-            )}
-          </>
-        )}
       </div>
     </Popup>
   );
 
-  if (geometry.type === "Polygon") {
+  if (geometry.type === 'Polygon') {
     return (
       <Polygon
         positions={convertedCoordinates}
         pathOptions={{ color: parentColor }}
+        eventHandlers={{
+          click: () => setSelectedFeature(feature.properties),
+        }}
       >
         {popupContent}
       </Polygon>
     );
   }
 
-  if (geometry.type === "MultiPolygon") {
+  if (geometry.type === 'MultiPolygon') {
     return (
       <>
         {convertedCoordinates.map((coords, index) => (
@@ -128,6 +49,9 @@ const FeaturePolygon = ({
             key={index}
             positions={coords}
             pathOptions={{ color: parentColor }}
+            eventHandlers={{
+              click: () => setSelectedFeature(feature.properties),
+            }}
           >
             {popupContent}
           </Polygon>
