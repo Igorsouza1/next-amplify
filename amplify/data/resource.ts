@@ -25,7 +25,7 @@ const schema = a.schema({
     mes: a.string(),
     acao: a.string(),
 
-  })
+  }).authorization(allow => [allow.guest().to(["read", "create", "delete", "update"]), allow.owner().to(["read", "update", "delete", "create"])]),
 }).authorization(allow => [allow.guest().to(["read", "create", "delete", "update"]), allow.owner().to(["read", "update", "delete", "create"])])
 
 export type Schema = ClientSchema<typeof schema>;
