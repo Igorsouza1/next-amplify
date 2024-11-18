@@ -65,6 +65,8 @@ export default function DragAndDrop() {
             setName(json.name);
             setErrorMessage(null);
             setSuccessMessage('GeoJSON loaded successfully!');
+          } else if (json.crs?.properties?.name !== 'urn:ogc:def:crs:EPSG::4674') {
+            setErrorMessage('Invalid CRS. Only EPSG:4674 is supported.');
           } else {
             throw new Error('Invalid GeoJSON structure');
           }
@@ -214,7 +216,7 @@ export default function DragAndDrop() {
                   <span className="font-medium">Total Features:</span> {geoJsonData.features.length}
                 </p>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 max-h-60 overflow-y-auto border border-gray-200 rounded-md p-2">
                 <h4 className="text-md font-semibold">Features:</h4>
                 {geoJsonData.features.map((feature: Feature, index: number) => (
                   <Collapsible

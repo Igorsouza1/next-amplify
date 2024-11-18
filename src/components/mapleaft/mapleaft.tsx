@@ -21,6 +21,7 @@ const MapLeaflet = () => {
     <>
       <MapContainer center={[-21.327773, -56.694734]} zoom={10} style={{ height: '100vh', width: '100%' }}>
         <LayersControl position="topright">
+          {/* OpenStreetMap Layer */}
           <BaseLayer checked name="OpenStreetMap">
             <TileLayer
               attribution="&copy; OpenStreetMap contributors"
@@ -28,9 +29,27 @@ const MapLeaflet = () => {
             />
           </BaseLayer>
 
+          {/* Topographic Map */}
+          <BaseLayer name="Topográfico">
+            <TileLayer
+              attribution="Map data: &copy; OpenTopoMap contributors"
+              url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+            />
+          </BaseLayer>
+
+          {/* Satellite Map */}
+          <BaseLayer name="Satélite (Google)">
+            <TileLayer
+              attribution="Imagery © Google"
+              url="https://www.google.com/maps/vt?lyrs=s&x={x}&y={y}&z={z}" // Utilize uma API Key válida para produção
+            />
+          </BaseLayer>
+
+          {/* Render active shapes */}
           {activeShapes.map((shape) =>
             shape.features.map((feature) => (
               <FeaturePolygon
+                key={feature.geometry.coordinates.toString()}
                 feature={feature}
                 parentName={shape.name}
                 parentColor={shape.color}

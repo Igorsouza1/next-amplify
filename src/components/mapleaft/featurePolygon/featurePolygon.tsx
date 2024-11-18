@@ -1,4 +1,4 @@
-import { Polygon, Popup } from 'react-leaflet';
+import { Polygon, Popup, Polyline } from 'react-leaflet'; // Importar Polyline
 import { Feature } from '@/@types/geomtry';
 import { convertGeoJSONToLeaflet } from '@/utils/geojson-utils';
 import React from 'react';
@@ -55,6 +55,26 @@ const FeaturePolygon = ({ feature, parentName, parentColor }: FeaturePolygonProp
           >
             {popupContent}
           </Polygon>
+        ))}
+      </>
+    );
+  }
+
+  // Novo caso para MultiLineString
+  if (geometry.type === 'MultiLineString') {
+    return (
+      <>
+        {convertedCoordinates.map((coords, index) => (
+          <Polyline
+            key={index}
+            positions={coords}
+            pathOptions={{ color: parentColor }}
+            eventHandlers={{
+              click: () => setSelectedFeature(feature.properties),
+            }}
+          >
+            {popupContent}
+          </Polyline>
         ))}
       </>
     );

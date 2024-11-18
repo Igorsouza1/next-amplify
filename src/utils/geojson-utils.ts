@@ -22,12 +22,22 @@ export const convertGeoJSONToLeaflet = (geometry: Geometry): Coordinate[][] | nu
         polygon.map((ring) => ring.map(([lon, lat]) => [lat, lon] as Coordinate))
       );
     }
+  } else if (geometry.type === "MultiLineString") {
+    if (
+      Array.isArray(geometry.coordinates) &&
+      Array.isArray(geometry.coordinates[0]) &&
+      Array.isArray(geometry.coordinates[0][0])
+    ) {
+      const multiLineString = geometry.coordinates as Coordinate[][];
+      return multiLineString.map((line) =>
+        line.map(([lon, lat]) => [lat, lon] as Coordinate)
+      );
+    }
   }
-
+  
   console.warn("Unsupported geometry type:", geometry.type);
   return null; // Retorna null para tipos de geometria não suportados.
 };
-
 
 //====================================================================================================
 
@@ -76,8 +86,7 @@ const geometryValidators: Record<GeometryType, (coords: any) => boolean> = {
  */
 const isValidGeometry = (geometry: any): geometry is Geometry =>
   geometry &&
-  typeof geometry.type === 'string' &&
-  geometryValidators[geometry.type as GeometryType]?.(geometry.coordinates) === true;
+  typeof geometry.type === 'string'
 
 /**
  * Valida se uma Feature é válida no formato GeoJSON.
@@ -92,14 +101,19 @@ const isValidFeature = (feature: any): feature is Feature =>
  * Valida se o objeto é um GeometryData válido.
  */
 export const isValidGeometryData = (data: any): data is GeometryData => {
-  console.log(typeof data)
+  console.log(typeof data);
   if (!data || typeof data !== 'object') {
     console.error("Validação falhou: O objeto principal não é válido.");
     return false;
   }
 
-  const {name, features} = data;
+  const { name, features, crs } = data;
 
+  // Verificação do CRS
+  if (!crs || typeof crs !== 'object' || crs.properties?.name !== 'urn:ogc:def:crs:EPSG::4674') {
+    console.error("Validação falhou: O CRS não é suportado ou não é EPSG:4674.", crs);
+    return false;
+  }
 
   // Validação de `name`
   if (typeof name !== 'string') {
