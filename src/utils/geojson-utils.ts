@@ -1,4 +1,4 @@
-import { GeometryData, Feature, Geometry, GeometryType, Coordinate, Polygon, MultiPolygon } from '@/@types/geomtry';
+import { GeometryData, Feature, Geometry, GeometryType, Coordinate, Polygon, MultiPolygon, LinearRing } from '@/@types/geomtry';
 
 /**
  * Converte as coordenadas GeoJSON em formato compatível com o Leaflet.
@@ -45,98 +45,118 @@ export const convertGeoJSONToLeaflet = (geometry: Geometry): Coordinate[][] | nu
 /**
  * Valida se uma coordenada é válida no formato GeoJSON.
  */
-const isValidCoordinate = (coord: any): coord is Coordinate =>
-  Array.isArray(coord) && coord.length === 2 && coord.every((value) => typeof value === 'number');
+const isValidCoordinate = (coord: unknown): coord is Coordinate =>
+  Array.isArray(coord) &&
+  coord.length === 2 &&
+  typeof coord[0] === 'number' &&
+  typeof coord[1] === 'number';
 
 /**
- * Valida se uma LineString ou MultiPoint é válida.
+ * Valida se um LinearRing (array de coordenadas) é válido.
  */
-const isValidCoordinateArray = (coords: any): coords is Coordinate[] =>
+const isValidLinearRing = (coords: unknown): coords is LinearRing =>
   Array.isArray(coords) && coords.every(isValidCoordinate);
 
 /**
  * Valida se um Polygon é válido.
  */
-const isValidPolygon = (polygon: any): polygon is Polygon =>
-  Array.isArray(polygon) && polygon.every(isValidCoordinateArray);
+const isValidPolygon = (polygon: unknown): polygon is Polygon =>
+  Array.isArray(polygon) && polygon.every(isValidLinearRing);
 
 /**
  * Valida se um MultiPolygon é válido.
  */
-const isValidMultiPolygon = (multiPolygon: any): multiPolygon is MultiPolygon =>
+const isValidMultiPolygon = (multiPolygon: unknown): multiPolygon is MultiPolygon =>
   Array.isArray(multiPolygon) && multiPolygon.every(isValidPolygon);
 
-
-
-
 /**
- * Mapeia o tipo de geometria para a função de validação correspondente.
+ * Valida se um array de coordenadas é válido (utilizado por LineString e MultiPoint).
  */
-const geometryValidators: Record<GeometryType, (coords: any) => boolean> = {
-  Point: isValidCoordinate,
-  LineString: isValidCoordinateArray,
-  MultiPoint: isValidCoordinateArray,
-  Polygon: isValidPolygon,
-  MultiLineString: isValidCoordinateArray, // Para simplificação, assumindo que é similar a LineString
-  MultiPolygon: isValidMultiPolygon,
-};
+const isValidCoordinateArray = (coords: unknown): coords is Coordinate[] =>
+  Array.isArray(coords) && coords.every(isValidCoordinate);
 
 /**
  * Valida se uma geometria é válida com base no tipo e nas coordenadas.
  */
-const isValidGeometry = (geometry: any): geometry is Geometry =>
-  geometry &&
-  typeof geometry.type === 'string'
+const isValidGeometry = (geometry: unknown): geometry is Geometry => {
+  if (typeof geometry === 'object' && geometry !== null) {
+    const { type, coordinates } = geometry as Geometry;
+    switch (type) {
+      case 'Point':
+        return isValidCoordinate(coordinates);
+      case 'LineString':
+        return isValidCoordinateArray(coordinates);
+      case 'Polygon':
+        return isValidPolygon(coordinates);
+      case 'MultiPoint':
+        return isValidCoordinateArray(coordinates);
+      case 'MultiLineString':
+        return Array.isArray(coordinates) &&
+          coordinates.every((line) => Array.isArray(line) && line.every(isValidCoordinate));
+      case 'MultiPolygon':
+        return isValidMultiPolygon(coordinates);
+      default:
+        console.error('Tipo de geometria desconhecido:', type);
+        return false;
+    }
+  }
+  return false;
+};
 
 /**
  * Valida se uma Feature é válida no formato GeoJSON.
  */
-const isValidFeature = (feature: any): feature is Feature =>
-  feature &&
-  feature.type === 'Feature' &&
-  isValidGeometry(feature.geometry) &&
-  typeof feature.properties === 'object';
+const isValidFeature = (feature: unknown): feature is Feature => {
+  if (typeof feature === 'object' && feature !== null) {
+    const { type, geometry, properties } = feature as Feature;
+    return (
+      type === 'Feature' &&
+      isValidGeometry(geometry) &&
+      typeof properties === 'object' &&
+      properties !== null
+    );
+  }
+  return false;
+};
 
 /**
  * Valida se o objeto é um GeometryData válido.
  */
-export const isValidGeometryData = (data: any): data is GeometryData => {
-  console.log(typeof data);
-  if (!data || typeof data !== 'object') {
-    console.error("Validação falhou: O objeto principal não é válido.");
-    return false;
+export const isValidGeometryData = (data: unknown): data is GeometryData => {
+  if (typeof data === 'object' && data !== null) {
+    const { name, features, crs } = data as GeometryData;
+
+    if (typeof name !== 'string') {
+      console.error("Validação falhou: 'name' deve ser uma string. Valor recebido:", name);
+      return false;
+    }
+
+    if (!Array.isArray(features) || !features.every(isValidFeature)) {
+      console.error('Validação falhou: Nem todas as features são válidas.');
+      return false;
+    }
+
+    if (crs && typeof crs !== 'object') {
+      console.error("Validação falhou: 'crs' deve ser um objeto válido.");
+      return false;
+    }
+
+    return true;
   }
 
-  const { name, features, crs } = data;
-
- 
-  // Validação de `name`
-  if (typeof name !== 'string') {
-    console.error("Validação falhou: 'name' deve ser uma string. Valor recebido:", name);
-    return false;
-  }
-
-  // Validação de `features`
-  if (!Array.isArray(features)) {
-    console.error("Validação falhou: 'features' deve ser um array. Valor recebido:", features);
-    return false;
-  }
-
-  if (!features.every(isValidFeature)) {
-    console.error("Validação falhou: Nem todas as features são válidas.");
-    features.forEach((feature, index) => {
-      if (!isValidFeature(feature)) {
-        console.error(`Feature inválida na posição ${index}:`, feature);
-      }
-    });
-    return false;
-  }
-
- 
-
-  console.log("GeoJSON validado com sucesso:", data);
-  return true;
+  console.error('Validação falhou: O objeto principal não é válido.');
+  return false;
 };
 
-
-//====================================================================================================
+/**
+ * Mapeia validadores para os tipos de geometria suportados.
+ */
+const geometryValidators: Record<GeometryType, (coords: unknown) => boolean> = {
+  Point: isValidCoordinate,
+  LineString: isValidCoordinateArray,
+  MultiPoint: isValidCoordinateArray,
+  Polygon: isValidPolygon,
+  MultiLineString: (coords) =>
+    Array.isArray(coords) && coords.every((line) => Array.isArray(line) && line.every(isValidCoordinate)),
+  MultiPolygon: isValidMultiPolygon,
+};

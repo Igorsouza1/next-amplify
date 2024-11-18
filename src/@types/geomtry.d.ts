@@ -73,6 +73,7 @@ export interface CRS {
  * Representa um conjunto de Features com metadados adicionais.
  */
 export interface GeometryData {
+  id?: string;
   name: string;
   color: string;
   category: "Atividades" | "Desmatamento" | "Fogo" | "Outros" | "Propriedades";
