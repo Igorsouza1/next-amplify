@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { GeometryData } from "@/@types/geomtry";
+import { GeometryData, Feature } from "@/@types/geomtry";
 import { useFetchGeometryData } from "@/hooks/useFetchGeometryData"; // Certifique-se de que o hook está sendo importado corretamente
 
 type ShapeContextType = {
@@ -10,8 +10,8 @@ type ShapeContextType = {
   addShape: (shape: GeometryData) => void;
   removeShape: (shapeId: string) => void;
   setAvailableShapes: React.Dispatch<React.SetStateAction<GeometryData[]>>;
-  selectedFeature: Record<string, any> | null; // Novo estado para armazenar a feature clicada
-  setSelectedFeature: React.Dispatch<React.SetStateAction<Record<string, any> | null>>; // Setter para o estado da feature clicada
+  selectedFeature: Feature["properties"] | null;
+  setSelectedFeature: React.Dispatch<React.SetStateAction<Feature["properties"] | null>>;
   loading: boolean;
 };
 

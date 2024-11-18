@@ -32,7 +32,12 @@ export type GeometryType = "Point" | "LineString" | "Polygon" | "MultiPoint" | "
  */
 export interface Geometry {
   type: GeometryType;
-  coordinates: Coordinate | Coordinate[] | Polygon | MultiPolygon;
+  coordinates:
+    | Coordinate // Point
+    | Coordinate[] // LineString, MultiPoint
+    | LinearRing // Polygon (exterior)
+    | Polygon // Polygon (com buracos)
+    | MultiPolygon; // MultiPolygon
 }
 
 /**
