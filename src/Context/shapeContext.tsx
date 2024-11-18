@@ -21,7 +21,7 @@ export const ShapeProvider = ({ children }: { children: ReactNode }) => {
   const fetchedShapes = useFetchGeometryData(); // Chama o hook que busca os shapes
   const [availableShapes, setAvailableShapes] = useState<GeometryData[]>([]);
   const [activeShapes, setActiveShapes] = useState<GeometryData[]>([]);
-  const [selectedFeature, setSelectedFeature] = useState<Record<string, any> | null>(null); // Estado para a feature clicada
+  const [selectedFeature, setSelectedFeature] = useState<Feature["properties"] | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
