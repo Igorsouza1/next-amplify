@@ -11,6 +11,21 @@ const schema = a.schema({
     color: a.string(),
     features: a.json(), // JSON para dados GeoJSON
   }).authorization(allow => [allow.guest().to(["read", "create", "delete", "update"]), allow.owner().to(["read", "update", "delete", "create"])]),
+
+
+  AcoesRDP: a.model({
+    PK: a.string(),
+    SK: a.string(),
+    name: a.string(),
+    latitude: a.float(),
+    longitude: a.float(),
+    elevation: a.float(),
+    time: a.string(),
+    description: a.string(),
+    mes: a.string(),
+    acao: a.string(),
+
+  })
 }).authorization(allow => [allow.guest().to(["read", "create", "delete", "update"]), allow.owner().to(["read", "update", "delete", "create"])])
 
 export type Schema = ClientSchema<typeof schema>;

@@ -40,26 +40,7 @@ export interface Geometry {
  */
 export interface Feature {
   type: "Feature";
-  properties: {
-    [key: string]: any; // Propriedades dinâmicas suportam diferentes contextos
-    COD_TEMA?: string;
-    NOM_TEMA?: string;
-    COD_IMOVEL?: string;
-    MOD_FISCAL?: number;
-    NUM_AREA?: number;
-    SITUACAO?: string;
-    IND_TIPO?: string;
-    DES_CONDIC?: string;
-    NOM_MUNICI?: string;
-    COD_ESTADO?: string;
-    nome?: string;
-    fonte?: string;
-    bioma?: string;
-    municipio?: string;
-    areaha?: number;
-    datadetec?: string;
-    sub_area?: number;
-  };
+  properties: Record<string, unknown>; // Permite qualquer valor sem usar `any`
   geometry: Geometry;
 }
 
