@@ -110,11 +110,13 @@ export const isValidGeometryData = (data: any): data is GeometryData => {
   const { name, features, crs } = data;
 
   // Verificação do CRS
-  if (!crs || typeof crs !== 'object' || crs.properties?.name !== 'urn:ogc:def:crs:EPSG::4674') {
-    console.error("Validação falhou: O CRS não é suportado ou não é EPSG:4674.", crs);
+  if (
+    data.crs &&
+    (!data.crs.properties || data.crs.properties.name !== 'urn:ogc:def:crs:EPSG::4674')
+  ) {
+    console.error("Invalid CRS. Only EPSG:4674 is supported. Found:", data.crs?.properties?.name);
     return false;
   }
-
   // Validação de `name`
   if (typeof name !== 'string') {
     console.error("Validação falhou: 'name' deve ser uma string. Valor recebido:", name);

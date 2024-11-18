@@ -63,6 +63,13 @@ export interface Feature {
   geometry: Geometry;
 }
 
+export interface CRS {
+  type: string;
+  properties: {
+    name: string;
+  };
+}
+
 /**
  * Representa um conjunto de Features com metadados adicionais.
  */
@@ -71,4 +78,5 @@ export interface GeometryData {
   color: string;
   category: "Atividades" | "Desmatamento" | "Fogo" | "Outros" | "Propriedades";
   features: Feature[];
+  crs?: CRS;
 }

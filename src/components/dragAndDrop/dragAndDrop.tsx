@@ -65,7 +65,7 @@ export default function DragAndDrop() {
             setName(json.name);
             setErrorMessage(null);
             setSuccessMessage('GeoJSON loaded successfully!');
-          } else if (json.crs?.properties?.name !== 'urn:ogc:def:crs:EPSG::4674') {
+          } else if ((json as GeometryData).crs?.properties?.name !== 'urn:ogc:def:crs:EPSG::4674') {
             setErrorMessage('Invalid CRS. Only EPSG:4674 is supported.');
           } else {
             throw new Error('Invalid GeoJSON structure');
