@@ -146,7 +146,7 @@ export default function DragAndDrop() {
   }
 
   return (
-    <div className="p-4 max-w-2xl mx-auto">
+    <div className="p-4 max-w-2xl mx-auto h-screen overflow-y-scroll">
       <Card>
         <CardHeader>
           <CardTitle>GeoJSON Drag and Drop</CardTitle>
@@ -216,7 +216,7 @@ export default function DragAndDrop() {
                   <span className="font-medium">Total Features:</span> {geoJsonData.features.length}
                 </p>
               </div>
-              <div className="space-y-2 max-h-60 overflow-y-auto border border-gray-200 rounded-md p-2">
+              <div className="space-y-2 max-h-96 overflow-y-scroll border border-gray-200 rounded-md p-2">
                 <h4 className="text-md font-semibold">Features:</h4>
                 {geoJsonData.features.map((feature: Feature, index: number) => (
                   <Collapsible
