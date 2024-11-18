@@ -10,6 +10,8 @@ interface FeaturePolygonProps {
   parentColor: string;
 }
 
+
+
 const FeaturePolygon = ({ feature, parentName, parentColor }: FeaturePolygonProps) => {
   const geometry = feature.geometry;
   const convertedCoordinates = convertGeoJSONToLeaflet(geometry);
