@@ -1,64 +1,84 @@
 'use client'
 
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { useShapeContext } from "@/Context/shapeContext";
-import { useState, useEffect } from "react";
-import { Trash } from "lucide-react";
-import { deleteShapeAction } from "@/app/_actions/actions";
-import DeleteConfirmModal from "@/components/ConfirmModal/deleteconfirmModal";
-import { GeometryData } from "@/@types/geomtry";
+import { useState, useEffect } from "react"
+import { Trash, ChevronDown, ChevronUp } from 'lucide-react'
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import { useShapeContext } from "@/Context/shapeContext"
+import { deleteShapeAction } from "@/app/_actions/actions"
+import DeleteConfirmModal from "@/components/ConfirmModal/deleteconfirmModal"
+import { GeometryData } from "@/@types/geomtry"
 
-const ControlShapes = () => {
-  const { availableShapes, activeShapes, addShape, removeShape, loading, setAvailableShapes } = useShapeContext();
-  const [selectedShapes, setSelectedShapes] = useState<string[]>(activeShapes.map(shape => shape.id));
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [shapeToDelete, setShapeToDelete] = useState<string | null>(null);
+export default function ExpandableControlShapes() {
+  const { availableShapes, activeShapes, addShape, removeShape, loading, setAvailableShapes } = useShapeContext()
+  const [selectedShapes, setSelectedShapes] = useState<string[]>(activeShapes.map(shape => shape.id))
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [shapeToDelete, setShapeToDelete] = useState<string | null>(null)
+  const [isOpen, setIsOpen] = useState(true)
 
   useEffect(() => {
-    setSelectedShapes(activeShapes.map((shape) => shape.id));
-  }, [activeShapes]);
+    setSelectedShapes(activeShapes.map((shape) => shape.id))
+  }, [activeShapes])
 
   const handleCheckboxChange = (shapeId: string) => {
     if (selectedShapes.includes(shapeId)) {
-      removeShape(shapeId);
-      setSelectedShapes(selectedShapes.filter(id => id !== shapeId));
+      removeShape(shapeId)
+      setSelectedShapes(selectedShapes.filter(id => id !== shapeId))
     } else {
-      const selectedShape = availableShapes.find((shape) => shape.id === shapeId);
+      const selectedShape = availableShapes.find((shape) => shape.id === shapeId)
       if (selectedShape) {
-        addShape(selectedShape);
-        setSelectedShapes([...selectedShapes, shapeId]);
+        addShape(selectedShape)
+        setSelectedShapes([...selectedShapes, shapeId])
       }
     }
-  };
+  }
 
   const handleDeleteClick = (shapeId: string) => {
-    setShapeToDelete(shapeId);
-    setIsModalOpen(true);
-  };
+    setShapeToDelete(shapeId)
+    setIsModalOpen(true)
+  }
 
   const handleConfirmDelete = async () => {
     if (shapeToDelete) {
       try {
-        await deleteShapeAction(shapeToDelete);
-        setAvailableShapes((prevShapes: GeometryData[]) => prevShapes.filter(shape => shape.id !== shapeToDelete));
-        setSelectedShapes(selectedShapes.filter(id => id !== shapeToDelete));
+        await deleteShapeAction(shapeToDelete)
+        setAvailableShapes((prevShapes: GeometryData[]) => prevShapes.filter(shape => shape.id !== shapeToDelete))
+        setSelectedShapes(selectedShapes.filter(id => id !== shapeToDelete))
       } catch (error) {
-        console.error("Erro ao deletar o shape:", error);
+        console.error("Erro ao deletar o shape:", error)
       } finally {
-        setIsModalOpen(false);
-        setShapeToDelete(null);
+        setIsModalOpen(false)
+        setShapeToDelete(null)
       }
     }
-  };
+  }
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>
 
   return (
     <div className="w-full max-w-sm mx-auto">
-      <div className="border rounded-lg p-6 shadow-sm bg-card">
-        <h2 className="text-lg font-semibold mb-4">Shapes</h2>
-        <div className="space-y-4">
+      <Collapsible
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        className="border rounded-lg shadow-sm bg-card"
+      >
+        <CollapsibleTrigger asChild>
+          <Button variant="ghost" className="flex w-full justify-between p-6">
+            <h2 className="text-lg font-semibold">Shapes</h2>
+            {isOpen ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="p-6 pt-0 space-y-4">
           {availableShapes.map((shape) => (
             <div key={shape.id} className="flex items-center space-x-2">
               <Checkbox
@@ -69,14 +89,13 @@ const ControlShapes = () => {
               <Label htmlFor={shape.id}>{shape.name}</Label>
               <Trash
                 onClick={() => handleDeleteClick(shape.id)}
-                className="w-4 h-4 text-red-500 cursor-pointer"
+                className="w-4 h-4 text-red-500 cursor-pointer ml-auto"
               />
             </div>
           ))}
-        </div>
-      </div>
+        </CollapsibleContent>
+      </Collapsible>
 
-      {/* Modal de confirmação */}
       {isModalOpen && (
         <DeleteConfirmModal
           isOpen={isModalOpen}
@@ -85,7 +104,5 @@ const ControlShapes = () => {
         />
       )}
     </div>
-  );
-};
-
-export default ControlShapes;
+  )
+}
