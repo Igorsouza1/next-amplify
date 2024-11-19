@@ -44,6 +44,7 @@ export interface Geometry {
  * Representa uma Feature no formato GeoJSON.
  */
 export interface Feature {
+  id: string;
   type: "Feature";
   properties: {
     COD_TEMA?: string;

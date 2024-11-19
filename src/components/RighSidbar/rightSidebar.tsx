@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
 import { useToast } from '@/hooks/use-toast';
 import { Feature } from '@/@types/geomtry';
-import { updatePost } from '@/app/_actions/actions'; // Certifique-se de importar corretamente
+import { updateShapeAction } from '@/app/_actions/actions'; // Certifique-se de importar corretamente
 import { useShapeContext } from '@/Context/shapeContext'; // Para acessar os dados do contexto
 
 type BarraLateralProps = {
@@ -16,64 +16,60 @@ type BarraLateralProps = {
   onClose: () => void;
 };
 
-export default function RighSidbar({ isOpen, onClose }: BarraLateralProps) {
+export default function RightSidebar({ isOpen, onClose }: BarraLateralProps) {
   const { activeShapes, selectedFeature, setSelectedFeature } = useShapeContext();
-  const [atributos, setAtributos] = useState<Feature["properties"]>(selectedFeature || {});
+  const [atributos, setAtributos] = useState<Feature['properties']>(selectedFeature?.properties || {});
   const [editando, setEditando] = useState(false);
   const { toast } = useToast();
 
+  // Atualiza os atributos sempre que a feature selecionada mudar
   useEffect(() => {
-    setAtributos(selectedFeature || {});
+    setAtributos(selectedFeature?.properties || {});
   }, [selectedFeature]);
 
   const handleEdit = () => setEditando(true);
 
   const handleSave = async () => {
     try {
-      if (!selectedFeature) {
-        throw new Error("Nenhuma feature selecionada.");
+      if (!selectedFeature || !selectedFeature.id) {
+        throw new Error('Nenhuma feature selecionada ou feature sem ID.');
       }
-  
+
       // Encontra o shape ativo associado à feature selecionada
       const activeShape = activeShapes.find((shape) =>
-        shape.features.some((feature) => feature.properties === selectedFeature)
+        shape.features.some((feature) => feature.id === selectedFeature.id)
       );
-  
+
       if (!activeShape?.id) {
-        throw new Error("ID do shape ativo não encontrado.");
+        throw new Error('ID do shape ativo não encontrado.');
       }
-  
-      // Obtém o ID único da feature a ser atualizada
-      const featureId = activeShape.features.find(
-        (feature: any) => feature.properties === selectedFeature
-      )?.id;
-  
-      if (!featureId) {
-        throw new Error("ID da feature não encontrado.");
+
+      // Atualiza cada campo alterado individualmente no backend
+      for (const [key, value] of Object.entries(atributos)) {
+        await updateShapeAction(activeShape.id, {
+          id: selectedFeature.id, // ID da feature a ser atualizada
+          field: key, // Nome do campo atualizado
+          value, // Novo valor
+        });
       }
-  
-      // Atualiza os dados no DynamoDB
-      await updatePost(activeShape.id, atributos, featureId);
-  
-      setEditando(false);
+
       toast({
-        title: "Edição realizada com sucesso",
-        description: "Os dados foram atualizados no banco.",
+        title: 'Edição realizada com sucesso',
+        description: 'Os dados foram atualizados no banco.',
       });
-  
-      // Limpa a seleção
-      setSelectedFeature(null);
+
+      // Finaliza a edição
+      setEditando(false);
     } catch (error) {
-      console.error("Erro ao salvar:", error);
+      console.error('Erro ao salvar:', error);
       toast({
-        title: "Erro ao salvar",
-        description: "Não foi possível atualizar os dados. Tente novamente.",
-        variant: "destructive",
+        title: 'Erro ao salvar',
+        description: 'Não foi possível atualizar os dados. Tente novamente.',
+        variant: 'destructive',
       });
     }
   };
-  
-  
+
   const handleChange = (key: string, value: string) => {
     setAtributos((prev) => ({ ...prev, [key]: value }));
   };
@@ -90,20 +86,22 @@ export default function RighSidbar({ isOpen, onClose }: BarraLateralProps) {
           </SheetClose>
         </SheetHeader>
         <div className="mt-4 space-y-4">
+          {/* Exibição das propriedades */}
           {Object.entries(atributos || {}).map(([key, value]) => (
             <div key={key}>
               <Label htmlFor={key}>{key}</Label>
               {editando ? (
                 <Input
                   id={key}
-                  value={value?.toString() || ""}
+                  value={value?.toString() || ''}
                   onChange={(e) => handleChange(key, e.target.value)}
                 />
               ) : (
-                <p className="text-sm text-gray-600">{value?.toString() || "N/A"}</p>
+                <p className="text-sm text-gray-600">{value?.toString() || 'N/A'}</p>
               )}
             </div>
           ))}
+          {/* Botões de ação */}
           {editando ? (
             <Button onClick={handleSave} className="w-full">
               <Save className="mr-2 h-4 w-4" /> Salvar

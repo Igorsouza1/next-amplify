@@ -131,10 +131,10 @@ export const isValidGeometryData = (data: unknown): data is GeometryData => {
       return false;
     }
 
-    if (!Array.isArray(features) || !features.every(isValidFeature)) {
-      console.error('Validação falhou: Nem todas as features são válidas.');
-      return false;
-    }
+    // if (!Array.isArray(features) || !features.every(isValidFeature)) {
+    //   console.error('Validação falhou: Nem todas as features são válidas.');
+    //   return false;
+    // }
 
     if (crs && typeof crs !== 'object') {
       console.error("Validação falhou: 'crs' deve ser um objeto válido.");

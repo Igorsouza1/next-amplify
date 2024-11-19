@@ -10,8 +10,6 @@ interface FeaturePolygonProps {
   parentColor: string;
 }
 
-
-
 const FeaturePolygon = ({ feature, parentName, parentColor }: FeaturePolygonProps) => {
   const geometry = feature.geometry;
   const convertedCoordinates = convertGeoJSONToLeaflet(geometry);
@@ -35,7 +33,7 @@ const FeaturePolygon = ({ feature, parentName, parentColor }: FeaturePolygonProp
         positions={convertedCoordinates}
         pathOptions={{ color: parentColor }}
         eventHandlers={{
-          click: () => setSelectedFeature(feature.properties),
+          click: () => setSelectedFeature(feature), // Passa a Feature completa
         }}
       >
         {popupContent}
@@ -52,7 +50,7 @@ const FeaturePolygon = ({ feature, parentName, parentColor }: FeaturePolygonProp
             positions={coords}
             pathOptions={{ color: parentColor }}
             eventHandlers={{
-              click: () => setSelectedFeature(feature.properties),
+              click: () => setSelectedFeature(feature), // Passa a Feature completa
             }}
           >
             {popupContent}
@@ -62,7 +60,6 @@ const FeaturePolygon = ({ feature, parentName, parentColor }: FeaturePolygonProp
     );
   }
 
-  // Novo caso para MultiLineString
   if (geometry.type === 'MultiLineString') {
     return (
       <>
@@ -72,7 +69,7 @@ const FeaturePolygon = ({ feature, parentName, parentColor }: FeaturePolygonProp
             positions={coords}
             pathOptions={{ color: parentColor }}
             eventHandlers={{
-              click: () => setSelectedFeature(feature.properties),
+              click: () => setSelectedFeature(feature), // Passa a Feature completa
             }}
           >
             {popupContent}

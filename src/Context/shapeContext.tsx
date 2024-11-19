@@ -10,8 +10,8 @@ type ShapeContextType = {
   addShape: (shape: GeometryData) => void;
   removeShape: (shapeId: string) => void;
   setAvailableShapes: React.Dispatch<React.SetStateAction<GeometryData[]>>;
-  selectedFeature: Feature["properties"] | null;
-  setSelectedFeature: React.Dispatch<React.SetStateAction<Feature["properties"] | null>>;
+  selectedFeature: Feature | null; // Altere para armazenar a Feature inteira
+  setSelectedFeature: React.Dispatch<React.SetStateAction<Feature | null>>;
   loading: boolean;
 };
 
@@ -21,7 +21,7 @@ export const ShapeProvider = ({ children }: { children: ReactNode }) => {
   const fetchedShapes = useFetchGeometryData(); // Chama o hook que busca os shapes
   const [availableShapes, setAvailableShapes] = useState<GeometryData[]>([]);
   const [activeShapes, setActiveShapes] = useState<GeometryData[]>([]);
-  const [selectedFeature, setSelectedFeature] = useState<Feature["properties"] | null>(null);
+  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

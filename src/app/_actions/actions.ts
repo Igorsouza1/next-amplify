@@ -4,7 +4,6 @@ import { cookieBasedClient } from "@/utils/amplify-utils";
 import { redirect } from "next/navigation";
 
 
-import type { Schema } from '@/../amplify/data/resource';
 
 
 
@@ -105,74 +104,37 @@ export async function deleteShapeAction(id: string) {
   }
 
 
-
-  export async function updatePost(
-    id: string,
-    updatedProperties: { [key: string]: any }, // Campos a serem atualizados em properties
-    featureId: string // Identificador único da feature a ser atualizada
+  export async function updateShapeAction(
+    shapeId: string,
+    { id, field, value }: { id: string; field: string; value: any },
+    activeShapes: any[]
   ) {
     try {
-      if (!id) throw new Error("ID não pode ser nulo ou indefinido.");
-      if (!featureId) throw new Error("ID da feature não pode ser nulo ou indefinido.");
-      if (!updatedProperties || Object.keys(updatedProperties).length === 0) {
-        throw new Error("Os campos para atualização estão vazios.");
+      // Localize o shape correspondente no estado local
+      const shapeIndex = activeShapes.findIndex((shape: any) => shape.id === shapeId);
+      if (shapeIndex === -1) {
+        throw new Error('Shape não encontrado.');
       }
   
-      console.log("Iniciando atualização. ID:", id);
-      console.log("Campos para atualização:", updatedProperties);
+      const shape = activeShapes[shapeIndex];
   
-      // Recupera o item atual
-      const { data: currentData, errors: fetchErrors } = await cookieBasedClient.models.InitialGeometry.get({ id });
-  
-      if (fetchErrors) {
-        console.error("Erro ao buscar o item:", fetchErrors);
-        throw new Error("Erro ao buscar o item para atualização.");
+      // Localize a feature pelo ID
+      const featureIndex = shape.features.findIndex((feature: any) => feature.id === id);
+      if (featureIndex === -1) {
+        throw new Error('Feature não encontrada no shape.');
       }
   
-      if (!currentData) {
-        throw new Error("Item não encontrado.");
-      }
+      // Atualize o campo dentro da feature
+      shape.features[featureIndex].properties[field] = value;
   
-      console.log("Dados do item atual:", JSON.stringify(currentData, null, 2));
+      // Simule o salvamento
+      console.log('Shape atualizado:', JSON.stringify(shape, null, 2));
   
-      const featuresArray = currentData.features;
-  
-      if (!Array.isArray(featuresArray)) {
-        throw new Error("A estrutura de 'features' não é um array válido.");
-      }
-  
-      // Atualiza a feature correta no array
-      const updatedFeatures = featuresArray.map((feature: any) => {
-        if (feature.id === featureId) {
-          return {
-            ...feature,
-            properties: {
-              ...feature.properties,
-              ...updatedProperties, // Atualiza apenas os campos desejados
-            },
-          };
-        }
-        return feature;
-      });
-  
-      console.log("Array de features atualizado:", JSON.stringify(updatedFeatures, null, 2));
-  
-      // Envia a atualização
-      const { data: updatedData, errors: updateErrors } = await cookieBasedClient.models.InitialGeometry.update({
-        id,
-        features: updatedFeatures, // Atualiza o array completo
-      });
-  
-      if (updateErrors) {
-        console.error("Erro ao atualizar o item:", updateErrors);
-        throw new Error("Erro ao atualizar o item.");
-      }
-  
-      console.log("Item atualizado com sucesso:", JSON.stringify(updatedData, null, 2));
-      return updatedData;
+      // Retorne o shape atualizado
+      return shape;
     } catch (error) {
-      console.error("Erro ao executar updatePost:", error.message);
-      throw error;
+      console.error('Erro ao executar updateShapeAction:', error);
+      throw new Error('Erro ao processar o campo \'features\' como JSON.');
     }
   }
   

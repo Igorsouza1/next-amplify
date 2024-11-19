@@ -47,23 +47,23 @@ const MapLeaflet = () => {
 
           {/* Render active shapes */}
           {activeShapes.map((shape) =>
-            shape.features.map((feature) => (
-              <FeaturePolygon
-                key={feature.geometry.coordinates.toString()}
-                feature={feature}
-                parentName={shape.name}
-                parentColor={shape.color}
-              />
-            ))
-          )}
+  shape.features.map((feature) => (
+    <FeaturePolygon
+      key={feature.geometry.coordinates.toString()}
+      feature={feature} // Passa a Feature completa
+      parentName={shape.name}
+      parentColor={shape.color}
+    />
+  ))
+)}
         </LayersControl>
       </MapContainer>
 
       <RightSideBar
         isOpen={!!selectedFeature}
         onClose={() => setSelectedFeature(null)}
-        properties={selectedFeature || {}}
       />
+
     </>
   );
 };
