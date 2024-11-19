@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { X, Pencil, Save } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
-import { useToast } from '@/hooks/use-toast';
-import { Feature } from '@/@types/geomtry';
-import { updateShapeAction } from '@/app/_actions/actions'; // Certifique-se de importar corretamente
-import { useShapeContext } from '@/Context/shapeContext'; // Para acessar os dados do contexto
+import { useState, useEffect } from "react";
+import { X, Pencil, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import { useToast } from "@/hooks/use-toast";
+import { Feature } from "@/@types/geomtry";
+import { useShapeContext } from "@/Context/shapeContext";
+import { updateFeatureProperties } from "@/app/_actions/actions"; // Action atualizada
 
 type BarraLateralProps = {
   isOpen: boolean;
@@ -17,8 +17,10 @@ type BarraLateralProps = {
 };
 
 export default function RightSidebar({ isOpen, onClose }: BarraLateralProps) {
-  const { activeShapes, selectedFeature, setSelectedFeature } = useShapeContext();
-  const [atributos, setAtributos] = useState<Feature['properties']>(selectedFeature?.properties || {});
+  const { selectedFeature, activeShapes } = useShapeContext();
+  const [atributos, setAtributos] = useState<Feature["properties"]>(
+    selectedFeature?.properties || {}
+  );
   const [editando, setEditando] = useState(false);
   const { toast } = useToast();
 
@@ -31,41 +33,37 @@ export default function RightSidebar({ isOpen, onClose }: BarraLateralProps) {
 
   const handleSave = async () => {
     try {
-      if (!selectedFeature || !selectedFeature.id) {
-        throw new Error('Nenhuma feature selecionada ou feature sem ID.');
+      if (!selectedFeature) {
+        throw new Error("Nenhuma feature selecionada.");
       }
 
-      // Encontra o shape ativo associado à feature selecionada
-      const activeShape = activeShapes.find((shape) =>
+      // Encontra o ID raiz do shape
+      const rootId = activeShapes.find((shape) =>
         shape.features.some((feature) => feature.id === selectedFeature.id)
-      );
+      )?.id;
 
-      if (!activeShape?.id) {
-        throw new Error('ID do shape ativo não encontrado.');
+      if (!rootId) {
+        throw new Error("ID raiz do shape não encontrado.");
       }
 
-      // Atualiza cada campo alterado individualmente no backend
-      for (const [key, value] of Object.entries(atributos)) {
-        await updateShapeAction(activeShape.id, {
-          id: selectedFeature.id, // ID da feature a ser atualizada
-          field: key, // Nome do campo atualizado
-          value, // Novo valor
-        });
-      }
+      // Chama a action para atualizar as propriedades da feature
+      const updatedShape = await updateFeatureProperties(rootId, selectedFeature.id, atributos);
+
+      console.log("Shape atualizado:", updatedShape);
 
       toast({
-        title: 'Edição realizada com sucesso',
-        description: 'Os dados foram atualizados no banco.',
+        title: "Propriedades Salvas",
+        description: "As alterações foram salvas com sucesso.",
       });
 
       // Finaliza a edição
       setEditando(false);
     } catch (error) {
-      console.error('Erro ao salvar:', error);
+      console.error("Erro ao salvar:", error);
       toast({
-        title: 'Erro ao salvar',
-        description: 'Não foi possível atualizar os dados. Tente novamente.',
-        variant: 'destructive',
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar os dados. Tente novamente.",
+        variant: "destructive",
       });
     }
   };
@@ -86,6 +84,24 @@ export default function RightSidebar({ isOpen, onClose }: BarraLateralProps) {
           </SheetClose>
         </SheetHeader>
         <div className="mt-4 space-y-4">
+          {/* Exibição do ID raiz */}
+          <div>
+            <Label>ID Raiz</Label>
+            <p className="text-sm text-gray-600">
+              {
+                activeShapes.find((shape) =>
+                  shape.features.some((feature) => feature.id === selectedFeature?.id)
+                )?.id || "N/A"
+              }
+            </p>
+          </div>
+
+          {/* Exibição do ID da feature selecionada */}
+          <div>
+            <Label>ID da Feature Selecionada</Label>
+            <p className="text-sm text-gray-600">{selectedFeature?.id || "N/A"}</p>
+          </div>
+
           {/* Exibição das propriedades */}
           {Object.entries(atributos || {}).map(([key, value]) => (
             <div key={key}>
@@ -93,14 +109,15 @@ export default function RightSidebar({ isOpen, onClose }: BarraLateralProps) {
               {editando ? (
                 <Input
                   id={key}
-                  value={value?.toString() || ''}
+                  value={value?.toString() || ""}
                   onChange={(e) => handleChange(key, e.target.value)}
                 />
               ) : (
-                <p className="text-sm text-gray-600">{value?.toString() || 'N/A'}</p>
+                <p className="text-sm text-gray-600">{value?.toString() || "N/A"}</p>
               )}
             </div>
           ))}
+
           {/* Botões de ação */}
           {editando ? (
             <Button onClick={handleSave} className="w-full">

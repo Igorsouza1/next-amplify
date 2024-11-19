@@ -3,11 +3,6 @@
 import { cookieBasedClient } from "@/utils/amplify-utils";
 import { redirect } from "next/navigation";
 
-
-
-
-
-
 type CategoryType = "Desmatamento" | "Fogo" | "Atividades" | "Propriedades" | "Outros";
 
 const categoryCounters: { [key in CategoryType]?: number } = {}; // Mudei de let para const
@@ -104,37 +99,94 @@ export async function deleteShapeAction(id: string) {
   }
 
 
-  export async function updateShapeAction(
+
+  export async function updateFeatureProperties(
     shapeId: string,
-    { id, field, value }: { id: string; field: string; value: any },
-    activeShapes: any[]
+    featureId: string,
+    updatedFeature: Record<string, any>
   ) {
+    console.log("Iniciando atualização de feature no DynamoDB...");
+    console.log(`Shape ID recebido: ${shapeId}`);
+    console.log(`Feature ID recebido: ${featureId}`);
+    console.log("Nova feature recebida:", updatedFeature);
+  
     try {
-      // Localize o shape correspondente no estado local
-      const shapeIndex = activeShapes.findIndex((shape: any) => shape.id === shapeId);
-      if (shapeIndex === -1) {
-        throw new Error('Shape não encontrado.');
+      console.log("Buscando shape no banco de dados...");
+      const { data: shape, errors: shapeErrors } = await cookieBasedClient.models.InitialGeometry.get({
+        id: shapeId,
+      });
+  
+      if (shapeErrors || !shape) {
+        throw new Error("Shape não encontrado no banco de dados.");
       }
   
-      const shape = activeShapes[shapeIndex];
+      console.log("Shape encontrado:", shape);
   
-      // Localize a feature pelo ID
-      const featureIndex = shape.features.findIndex((feature: any) => feature.id === id);
+      // Verificar se o campo 'features' existe e é válido
+      if (!shape.features || typeof shape.features !== "string") {
+        throw new Error("O campo 'features' do shape é inválido ou está ausente.");
+      }
+  
+      // Desserializar o campo 'features'
+      let features: any[];
+      try {
+        const parsed = JSON.parse(shape.features);
+        features = parsed.features || [];
+      } catch (err) {
+        throw new Error("Falha ao analisar o JSON do campo 'features'.");
+      }
+  
+      console.log("Features desserializadas:", features);
+  
+      // Localizar a feature pelo ID
+      const featureIndex = features.findIndex((feature) => feature.id === featureId);
       if (featureIndex === -1) {
-        throw new Error('Feature não encontrada no shape.');
+        throw new Error(`Feature com ID ${featureId} não encontrada.`);
       }
   
-      // Atualize o campo dentro da feature
-      shape.features[featureIndex].properties[field] = value;
+      console.log("Feature encontrada antes da atualização:", features[featureIndex]);
   
-      // Simule o salvamento
-      console.log('Shape atualizado:', JSON.stringify(shape, null, 2));
+      // Atualizar a feature completa
+      features[featureIndex] = {
+        ...features[featureIndex], // Mantém os dados antigos se necessário
+        ...updatedFeature,        // Sobrescreve com os dados atualizados
+      };
   
-      // Retorne o shape atualizado
-      return shape;
+      console.log("Feature atualizada:", features[featureIndex]);
+  
+      // Serializar novamente o campo 'features'
+      const updatedFeatures = JSON.stringify({ features });
+  
+      console.log("Features atualizadas prontas para salvar:", updatedFeatures);
+  
+      // Atualizar o shape no banco de dados
+      const updatedShape = {
+        ...shape,
+        features: updatedFeatures,
+      };
+  
+      console.log("Shape atualizado pronto para salvar:", updatedShape);
+  
+      // Primeiro, remova o item existente
+      console.log("Removendo shape antigo...");
+      await cookieBasedClient.models.InitialGeometry.delete({ id: shapeId });
+  
+      // Reinsira o item atualizado
+      console.log("Reinserindo shape atualizado...");
+      const { data: savedShape, errors: saveErrors } = await cookieBasedClient.models.InitialGeometry.create(
+        updatedShape
+      );
+  
+      if (saveErrors) {
+        console.error("Erros ao salvar no banco:", saveErrors);
+        throw new Error("Erro ao salvar as alterações no banco.");
+      }
+  
+      console.log("Shape salvo com sucesso:", savedShape);
+      return savedShape;
     } catch (error) {
-      console.error('Erro ao executar updateShapeAction:', error);
-      throw new Error('Erro ao processar o campo \'features\' como JSON.');
+      console.error("Erro ao executar updateFeatureProperties:", error);
+      throw new Error("Erro ao atualizar as propriedades da feature.");
     }
   }
   

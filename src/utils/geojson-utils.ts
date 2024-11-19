@@ -1,4 +1,10 @@
 import { GeometryData, Feature, Geometry, GeometryType, Coordinate, Polygon, MultiPolygon, LinearRing } from '@/@types/geomtry';
+import { v4 as uuidv4 } from 'uuid';
+
+
+
+
+// ===================================================================================================
 
 /**
  * Converte as coordenadas GeoJSON em formato compatível com o Leaflet.
@@ -39,7 +45,111 @@ export const convertGeoJSONToLeaflet = (geometry: Geometry): Coordinate[][] | nu
   return null; // Retorna null para tipos de geometria não suportados.
 };
 
+
+
+
+
 //====================================================================================================
+// REDUZIR A COMPLEXIDADE DA GEOMETRY
+/**
+ * Reduz a precisão de coordenadas em uma estrutura GeoJSON.
+ *
+ * @param coordinates - As coordenadas do GeoJSON.
+ * @param precision - O número de casas decimais para manter.
+ * @returns As coordenadas com precisão reduzida.
+ */
+
+
+
+export const reducePrecision = (coordinates: any, precision: number): any => {
+  if (Array.isArray(coordinates[0])) {
+    return coordinates.map((coord: Coordinate) => reducePrecision(coord, precision));
+    
+  }
+  return coordinates.map((val: number) => parseFloat(val.toFixed(precision)));
+};
+
+
+//====================================================================================================
+
+
+
+
+/**
+ * Lê um arquivo GeoJSON e processa seus dados.
+ * 
+ * @param file - O arquivo GeoJSON a ser lido.
+ * @param precision - Número de casas decimais para reduzir nas coordenadas (padrão: 5).
+ * @returns Uma Promise com os dados processados ou um erro.
+ */
+export const readGeoJSONFile = async (file: File, precision: number = 5): Promise<GeometryData> => {
+  if (!file.name.endsWith('.geojson')) {
+    throw new Error('Invalid file type. Please upload a GeoJSON file.');
+  }
+
+  const fileContent = await file.text();
+  const json = JSON.parse(fileContent) as GeometryData;
+
+  if (!isValidGeometryData(json)) {
+    throw new Error('Invalid GeoJSON structure or CRS.');
+  }
+
+  const featuresWithIds: Feature[] = json.features.map((feature) => ({
+    ...feature,
+    id: feature.id || uuidv4(), // Adiciona ID único se não existir
+    geometry: {
+      ...feature.geometry,
+      coordinates: reducePrecision(feature.geometry.coordinates, precision),
+    },
+  }));
+
+  return {
+    ...json,
+    features: featuresWithIds,
+  };
+};
+
+
+
+
+// ===================================================================================================
+// LIMPA AS PROPRETIES
+
+/**
+ * Filtra as propriedades de uma feature GeoJSON, mantendo apenas as especificadas.
+ *
+ * @param feature - A feature do GeoJSON.
+ * @param allowedProperties - Lista de propriedades permitidas.
+ * @returns Uma nova feature com propriedades filtradas.
+ */
+export const filterFeatureProperties = (feature: any, allowedProperties: string[]): any => {
+  return {
+    ...feature,
+    properties: Object.fromEntries(
+      Object.entries(feature.properties).filter(([key]) => allowedProperties.includes(key))
+    ),
+  };
+};
+
+
+
+
+
+
+
+
+
+
+// ===================================================================================================
+
+
+
+
+
+
+
+
+
 
 
 /**
