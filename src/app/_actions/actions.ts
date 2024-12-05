@@ -54,9 +54,133 @@ export async function createPost(formData: FormData) {
         }
     } catch (error) {
         console.error('Failed to create post:', error);
+        throw new Error(`Failed to create post: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 }
 
+
+
+
+// ====================================================================================================================
+// ====================================================================================================================
+// ====================================================================================================================
+// AÇÕES
+
+
+export async function createAcao(formData: FormData) {
+  try {
+      // Extraindo valores do formulário
+      const acao = formData.get('acao')?.toString() || '';
+      const mes = formData.get('mes')?.toString() || '';
+      const name = formData.get('name')?.toString() || '';
+      const latitude = parseFloat(formData.get('latitude')?.toString() || '0');
+      const longitude = parseFloat(formData.get('longitude')?.toString() || '0');
+      const elevation = parseFloat(formData.get('elevation')?.toString() || '0');
+      const time = formData.get('time')?.toString() || '';
+      const description = formData.get('description')?.toString() || '';
+
+      if (!acao || !mes) {
+          throw new Error('Missing required fields: "acao" and "mes"');
+      }
+
+      // Definindo chaves primária (PK) e secundária (SK)
+      const PK = `${acao}#${mes}`;
+      const SK = `entry#${new Date().getTime()}`; // Timestamp como identificador único
+
+      // Enviando os dados para o cliente
+      const { data, errors } = await cookieBasedClient.models.AcoesRDP.create({
+          PK,
+          SK,
+          name,
+          latitude,
+          longitude,
+          elevation,
+          time,
+          description,
+          mes,
+          acao,
+      });
+
+      if (errors) {
+          console.error('Error details:', errors);
+          throw new Error('Failed to create data');
+      }
+
+      console.log('Data created successfully:', data);
+      return data;
+  } catch (error) {
+      console.error('Failed to create post:', error);
+      throw new Error(`Failed to create post: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+
+export async function GetUniqueActions() {
+  try {
+    // Realiza uma consulta na tabela para obter todas as ações
+    const { data: allActions } = await cookieBasedClient.models.AcoesRDP.list({
+      selectionSet: ['acao'], // Seleciona apenas o campo 'acao'
+      authMode: 'userPool',
+    });
+
+    if (!allActions || allActions.length === 0) {
+      throw new Error("No actions found");
+    }
+
+    // Agrupa as ações únicas e conta as ocorrências
+    const actionCounts = allActions.reduce((acc: Record<string, number>, item: { acao: string | null }) => {
+      const action = item.acao || "Indefinida"; // Substitui null por uma string padrão
+      acc[action] = (acc[action] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Formata o resultado como um array
+    const uniqueActions = Object.entries(actionCounts).map(([acao, count]) => ({
+      acao,
+      count,
+    }));
+    console.log("Unique actions:", uniqueActions);
+
+    return uniqueActions;
+  } catch (error) {
+    console.error("Error fetching unique actions:", error);
+    throw new Error("Failed to fetch unique actions");
+  }
+}
+
+
+
+export async function GetPointsByAction(acao: string) {
+  try {
+    // Realiza a consulta no DynamoDB filtrando pelo campo "acao"
+    const { data: points } = await cookieBasedClient.models.AcoesRDP.list({
+      filter: { acao: { eq: acao } }, // Filtra onde "acao" é igual ao parâmetro recebido
+      selectionSet: ['name', 'latitude', 'longitude', 'elevation', 'time', 'description', 'mes', 'acao'],
+      authMode: 'userPool',
+    });
+
+    if (!points || points.length === 0) {
+      throw new Error(`No points found for action: ${acao}`);
+    }
+
+    console.log(`Points found for action "${acao}":`, points);
+
+    // Retorna os pontos formatados
+    return points.map((point: any) => ({
+      name: point.name,
+      latitude: point.latitude,
+      longitude: point.longitude,
+      elevation: point.elevation,
+      time: point.time,
+      description: point.description,
+      mes: point.mes,
+      acao: point.acao,
+    }));
+  } catch (error) {
+    console.error(`Error fetching points for action "${acao}":`, error);
+    throw new Error(`Failed to fetch points for action: ${acao}`);
+  }
+}
 
 
 
@@ -69,7 +193,7 @@ export async function getInitialGeometry() {
           authMode: 'userPool'
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-console.log(InitialGeometry.map((item: any) => item.id));
+// console.log(InitialGeometry.map((item: any) => item.id));
       return InitialGeometry;
   } catch (error) {
       console.error('Error getting initial geometry', error);
