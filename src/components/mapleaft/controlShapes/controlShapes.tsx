@@ -34,6 +34,8 @@ export default function ExpandableControlShapes() {
   const [shapeToDelete, setShapeToDelete] = useState<string | null>(null);
   const [isOpenShapes, setIsOpenShapes] = useState(true);
   const [isOpenActions, setIsOpenActions] = useState(false);
+  const [loadingAction, setLoadingAction] = useState<string | null>(null);
+
 
   useEffect(() => {
     setSelectedShapes(activeShapes.map((shape) => shape.id));
@@ -55,18 +57,24 @@ export default function ExpandableControlShapes() {
   };
 
   const handleActionCheckboxChange = async (action: string) => {
-    if (selectedActions.includes(action)) {
-      // Remove points for the deselected action
-      removePoints(action);
-      setSelectedActions((prev) => prev.filter((a) => a !== action));
-    } else {
-      try {
+    if (loadingAction) return; // Impede cliques repetidos enquanto carrega
+    setLoadingAction(action);
+  
+    try {
+      if (selectedActions.includes(action)) {
+        // Remove pontos relacionados à ação desmarcada
+        removePoints(action);
+        setSelectedActions((prev) => prev.filter((a) => a !== action));
+      } else {
+        // Busca e adiciona pontos relacionados à ação marcada
         const points = await GetPointsByAction(action);
         addPoints(points);
         setSelectedActions((prev) => [...prev, action]);
-      } catch (error) {
-        console.error(`Error fetching points for action "${action}":`, error);
       }
+    } catch (error) {
+      console.error(`Erro ao buscar pontos para a ação "${action}":`, error);
+    } finally {
+      setLoadingAction(null);
     }
   };
 
@@ -142,9 +150,11 @@ export default function ExpandableControlShapes() {
               <Checkbox
                 id={acao}
                 checked={selectedActions.includes(acao)}
+                disabled={loadingAction === acao} // Desativa o checkbox enquanto carrega
                 onCheckedChange={() => handleActionCheckboxChange(acao)}
               />
               <Label htmlFor={acao}>{`${acao} (${count})`}</Label>
+              {loadingAction === acao && <span className="ml-2 text-sm text-gray-500">Carregando...</span>}
             </div>
           ))}
         </CollapsibleContent>
