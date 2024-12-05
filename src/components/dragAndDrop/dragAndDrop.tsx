@@ -119,7 +119,7 @@ export default function DragAndDrop() {
       const filteredFeatures = state.geoJsonData.features.map((feature) =>
         filterFeatureProperties(feature, filteredProperties)
       );
-
+ 
       const formData = new FormData();
       formData.append("category", state.category);
       formData.append("type", state.geoJsonData.features[0]?.geometry.type || "");
