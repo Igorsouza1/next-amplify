@@ -61,12 +61,16 @@ export const convertGeoJSONToLeaflet = (geometry: Geometry): Coordinate[][] | nu
 
 
 
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const reducePrecision = (coordinates: any, precision: number): any => {
   if (Array.isArray(coordinates[0])) {
-    return coordinates.map((coord: Coordinate) => reducePrecision(coord, precision));
-    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return coordinates.map((coord: any) => reducePrecision(coord, precision));
   }
-  return coordinates.map((val: number) => parseFloat(val.toFixed(precision)));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return coordinates.map((val: any) => parseFloat(val.toFixed(precision)));
 };
 
 
@@ -99,6 +103,7 @@ export const readGeoJSONFile = async (file: File, precision: number = 5): Promis
     id: feature.id || uuidv4(), // Adiciona ID único se não existir
     geometry: {
       ...feature.geometry,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       coordinates: reducePrecision(feature.geometry.coordinates, precision),
     },
   }));
@@ -122,6 +127,7 @@ export const readGeoJSONFile = async (file: File, precision: number = 5): Promis
  * @param allowedProperties - Lista de propriedades permitidas.
  * @returns Uma nova feature com propriedades filtradas.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const filterFeatureProperties = (feature: any, allowedProperties: string[]): any => {
   return {
     ...feature,

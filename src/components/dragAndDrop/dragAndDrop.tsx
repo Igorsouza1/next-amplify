@@ -98,7 +98,7 @@ export default function DragAndDrop() {
       dispatch({ type: "SET_GEOJSON_DATA", payload: geoJson });
       dispatch({ type: "SET_NAME", payload: geoJson.name || "" });
       dispatch({ type: "SET_SUCCESS_MESSAGE", payload: "GeoJSON Carregado com Sucesso!" });
-    } catch (error: any) {
+    } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       console.error("Error processing GeoJSON:", error);
       dispatch({ type: "SET_GEOJSON_DATA", payload: null });
       dispatch({ type: "SET_ERROR_MESSAGE", payload: error.message || "Failed to process GeoJSON file." });

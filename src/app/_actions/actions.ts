@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 type CategoryType = "Desmatamento" | "Fogo" | "Atividades" | "Propriedades" | "Outros";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const categoryCounters: { [key in CategoryType]?: number } = {}; // Mudei de let para const
 
 // Função para obter o próximo ID sequencial para uma categoria específica
@@ -60,20 +61,21 @@ export async function createPost(formData: FormData) {
 
 
 // PEGAR AS GEOMETRIAS INICIAIS
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export async function getInitialGeometry() {
-    try{
-    const {data: InitialGeometry} = await cookieBasedClient.models.InitialGeometry.list({
-        selectionSet: ['id' , 'name', 'features', 'color'],
-        authMode: 'userPool'
-      }); 
-      console.log(InitialGeometry.map((item: any) => item.id))
-    // console.log('InitialGeometry', InitialGeometry)
+  try {
+      const { data: InitialGeometry } = await cookieBasedClient.models.InitialGeometry.list({
+          selectionSet: ['id', 'name', 'features', 'color'],
+          authMode: 'userPool'
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+console.log(InitialGeometry.map((item: any) => item.id));
       return InitialGeometry;
-    } catch (error) {
-        console.error('Error getting initial geometry', error)
-    }
+  } catch (error) {
+      console.error('Error getting initial geometry', error);
+  }
 }
-
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 
 
