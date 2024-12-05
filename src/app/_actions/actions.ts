@@ -105,7 +105,8 @@ export async function deleteShapeAction(id: string) {
   export async function updateFeatureProperties(
     shapeId: string,
     featureId: string,
-    updatedFeature: Record<string, any>
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+    updatedFeature: Record<string, any>/* eslint-enable @typescript-eslint/no-explicit-any */
   ) {
     console.log("Iniciando atualização de feature no DynamoDB...");
     console.log(`Shape ID recebido: ${shapeId}`);
@@ -130,7 +131,8 @@ export async function deleteShapeAction(id: string) {
       }
   
       // Desserializar o campo 'features'
-      let features: any[];
+      /* eslint-enable @typescript-eslint/no-explicit-any */
+      let features: any[];/* eslint-enable @typescript-eslint/no-explicit-any */
       try {
         const parsed = JSON.parse(shape.features);
         features = parsed.features || [];
