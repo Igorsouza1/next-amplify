@@ -21,7 +21,7 @@ const { BaseLayer } = LayersControl;
 // Criando o ícone personalizado
 const customIcon = L.icon({
   iconUrl: '/target.png', // Caminho relativo ao diretório public
-  iconSize: [25, 41], // Dimensão do ícone (ajuste conforme necessário)
+  iconSize: [41, 41], // Dimensão do ícone (ajuste conforme necessário)
   iconAnchor: [12, 41], // Ponto de ancoragem do ícone
   popupAnchor: [1, -34], // Posição do popup em relação ao ícone
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png', // Sombra opcional
