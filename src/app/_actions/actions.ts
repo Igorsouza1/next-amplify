@@ -1,7 +1,7 @@
 "use server";
 
 import { cookieBasedClient } from "@/utils/amplify-utils";
-import { redirect } from "next/navigation";
+
 
 type CategoryType = "Desmatamento" | "Fogo" | "Atividades" | "Propriedades" | "Outros";
 
@@ -225,96 +225,84 @@ export async function deleteShapeAction(id: string) {
   }
 
 
+export async function updateFeatureProperties(
+  shapeId: string,
+  featureId: string,
+  updatedFeature: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
+) {
+  console.log("Iniciando atualização de feature no DynamoDB...");
+  console.log(`Shape ID recebido: ${shapeId}`);
+  console.log(`Feature ID recebido: ${featureId}`);
+  console.log("Nova feature recebida:", updatedFeature);
 
-  export async function updateFeatureProperties(
-    shapeId: string,
-    featureId: string,
-    /* eslint-enable @typescript-eslint/no-explicit-any */
-    updatedFeature: Record<string, any>/* eslint-enable @typescript-eslint/no-explicit-any */
-  ) {
-    console.log("Iniciando atualização de feature no DynamoDB...");
-    console.log(`Shape ID recebido: ${shapeId}`);
-    console.log(`Feature ID recebido: ${featureId}`);
-    console.log("Nova feature recebida:", updatedFeature);
-  
-    try {
-      console.log("Buscando shape no banco de dados...");
-      const { data: shape, errors: shapeErrors } = await cookieBasedClient.models.InitialGeometry.get({
-        id: shapeId,
-      });
-  
-      if (shapeErrors || !shape) {
-        throw new Error("Shape não encontrado no banco de dados.");
-      }
-  
-      console.log("Shape encontrado:", shape);
-  
-      // Verificar se o campo 'features' existe e é válido
-      if (!shape.features || typeof shape.features !== "string") {
-        throw new Error("O campo 'features' do shape é inválido ou está ausente.");
-      }
-  
-      // Desserializar o campo 'features'
-      /* eslint-enable @typescript-eslint/no-explicit-any */
-      let features: any[];/* eslint-enable @typescript-eslint/no-explicit-any */
-      try {
-        const parsed = JSON.parse(shape.features);
-        features = parsed.features || [];
-      } catch (err) {
-        throw new Error("Falha ao analisar o JSON do campo 'features'.");
-      }
-  
-      console.log("Features desserializadas:", features);
-  
-      // Localizar a feature pelo ID
-      const featureIndex = features.findIndex((feature) => feature.id === featureId);
-      if (featureIndex === -1) {
-        throw new Error(`Feature com ID ${featureId} não encontrada.`);
-      }
-  
-      console.log("Feature encontrada antes da atualização:", features[featureIndex]);
-  
-      // Atualizar a feature completa
-      features[featureIndex] = {
-        ...features[featureIndex], // Mantém os dados antigos se necessário
-        ...updatedFeature,        // Sobrescreve com os dados atualizados
-      };
-  
-      console.log("Feature atualizada:", features[featureIndex]);
-  
-      // Serializar novamente o campo 'features'
-      const updatedFeatures = JSON.stringify({ features });
-  
-      console.log("Features atualizadas prontas para salvar:", updatedFeatures);
-  
-      // Atualizar o shape no banco de dados
-      const updatedShape = {
-        ...shape,
-        features: updatedFeatures,
-      };
-  
-      console.log("Shape atualizado pronto para salvar:", updatedShape);
-  
-      // Primeiro, remova o item existente
-      console.log("Removendo shape antigo...");
-      await cookieBasedClient.models.InitialGeometry.delete({ id: shapeId });
-  
-      // Reinsira o item atualizado
-      console.log("Reinserindo shape atualizado...");
-      const { data: savedShape, errors: saveErrors } = await cookieBasedClient.models.InitialGeometry.create(
-        updatedShape
-      );
-  
-      if (saveErrors) {
-        console.error("Erros ao salvar no banco:", saveErrors);
-        throw new Error("Erro ao salvar as alterações no banco.");
-      }
-  
-      console.log("Shape salvo com sucesso:", savedShape);
-      return savedShape;
-    } catch (error) {
-      console.error("Erro ao executar updateFeatureProperties:", error);
-      throw new Error("Erro ao atualizar as propriedades da feature.");
+  try {
+    console.log("Buscando shape no banco de dados...");
+    const { data: shape, errors: shapeErrors } = await cookieBasedClient.models.InitialGeometry.get({
+      id: shapeId,
+    });
+
+    if (shapeErrors || !shape) {
+      throw new Error("Shape não encontrado no banco de dados.");
     }
+
+    console.log("Shape encontrado:", shape);
+
+    // Verificar se o campo 'features' existe e é válido
+    if (!shape.features || typeof shape.features !== "string") {
+      throw new Error("O campo 'features' do shape é inválido ou está ausente.");
+    }
+
+    // Desserializar o campo 'features'
+    let features: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+    try {
+      const parsed = JSON.parse(shape.features);
+      features = parsed.features || [];
+    } catch (err) {
+      throw new Error("Falha ao analisar o JSON do campo 'features'.");
+    }
+
+    console.log("Features desserializadas:", features);
+
+    // Localizar a feature pelo ID
+    const featureIndex = features.findIndex((feature) => feature.id === featureId);
+    if (featureIndex === -1) {
+      throw new Error(`Feature com ID ${featureId} não encontrada.`);
+    }
+
+    console.log("Feature encontrada antes da atualização:", features[featureIndex]);
+
+    // Atualizar a feature completa
+    features[featureIndex] = {
+      ...features[featureIndex], // Mantém os dados antigos se necessário
+      ...updatedFeature,         // Sobrescreve com os dados atualizados
+    };
+
+    console.log("Feature atualizada:", features[featureIndex]);
+
+    // Serializar novamente o campo 'features'
+    const updatedFeatures = JSON.stringify({ features });
+
+    console.log("Features atualizadas prontas para salvar:", updatedFeatures);
+
+    // Atualizar o shape no banco de dados usando o método de atualização
+    const updatedShape = {
+      ...shape,
+      features: updatedFeatures,
+    };
+
+    console.log("Shape atualizado pronto para salvar:", updatedShape);
+
+    const { data: savedShape, errors: saveErrors } = await cookieBasedClient.models.InitialGeometry.update(updatedShape);
+
+    if (saveErrors) {
+      console.error("Erros ao salvar no banco:", saveErrors);
+      throw new Error("Erro ao salvar as alterações no banco.");
+    }
+
+    console.log("Shape salvo com sucesso:", savedShape);
+    return savedShape;
+  } catch (error) {
+    console.error("Erro ao executar updateFeatureProperties:", error);
+    throw new Error("Erro ao atualizar as propriedades da feature.");
   }
-  
+}

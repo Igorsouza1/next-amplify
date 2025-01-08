@@ -10,6 +10,18 @@ const schema = a.schema({
     name: a.string(),
     color: a.string(),
     features: a.json(), // JSON para dados GeoJSON
+    extra: a.json()
+  }).authorization(allow => [allow.guest().to(["read", "create", "delete", "update"]), allow.owner().to(["read", "update", "delete", "create"])]),
+
+
+
+  Areas: a.model({
+    PK: a.string(), // Primary Key
+    SK: a.string(), // Sort Key
+    type: a.string().default("Areas"),
+    name: a.string(),
+    geometry: a.json(), // JSON para dados GeoJSON
+    extra: a.json()
   }).authorization(allow => [allow.guest().to(["read", "create", "delete", "update"]), allow.owner().to(["read", "update", "delete", "create"])]),
 
 
@@ -24,9 +36,57 @@ const schema = a.schema({
     description: a.string(),
     mes: a.string(),
     acao: a.string(),
+    extra: a.json()
 
   }).authorization(allow => [allow.guest().to(["read", "create", "delete", "update"]), allow.owner().to(["read", "update", "delete", "create"])]),
+
+  Fogo: a.model({
+    PK: a.string(), // Primary Key
+    SK: a.string(), // Sort Key
+    type: a.string().default("Fogo"),
+    area: a.float(),
+    geometry: a.json(), // JSON para dados GeoJSON
+    data: a.string(),
+    extra: a.json()
+
+  }).authorization(allow => [allow.guest().to(["read", "create", "delete", "update" ]), allow.owner().to(["read", "update", "delete", "create"])]),
+
+
+  Desmatamento: a.model({
+    PK: a.string(), // Primary Key
+    SK: a.string(), // Sort Key
+    type: a.string().default("Desmatamento"),
+    data: a.string(),
+    municipio: a.string(),
+    cod_alerta: a.string(),
+    fonte: a.string(),
+    pressao: a.string(),
+    area: a.float(),
+    geometry: a.json(), // JSON para dados GeoJSON
+    extra: a.json()
+
+  }).authorization(allow => [allow.guest().to(["read", "create", "delete", "update" ]), allow.owner().to(["read", "update", "delete", "create"])]),
+
+
+  Propriedades: a.model({
+    PK: a.string(), // Primary Key
+    SK: a.string(), // Sort Key
+    type: a.string().default("Propriedades"),
+    geometry: a.json(), // JSON para dados GeoJSON
+    cod_imovel: a.string(),
+    area: a.float(),
+    nome: a.string(),
+    municipio: a.string(),
+    proprietario: a.string(),
+    extra: a.json()
+
+  }).authorization(allow => [allow.guest().to(["read", "create", "delete", "update" ]), allow.owner().to(["read", "update", "delete", "create"])]),
+
+
+
+
 }).authorization(allow => [allow.guest().to(["read", "create", "delete", "update"]), allow.owner().to(["read", "update", "delete", "create"])])
+
 
 export type Schema = ClientSchema<typeof schema>;
 
