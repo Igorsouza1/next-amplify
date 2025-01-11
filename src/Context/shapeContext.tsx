@@ -1,14 +1,28 @@
 'use client';
 
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { GeometryData, Feature } from "@/@types/geomtry";
+import { GeometryData, Feature, Coordinate } from "@/@types/geomtry";
 import { useFetchGeometryData } from "@/hooks/useFetchGeometryData";
 import { GetUniqueActions } from "@/app/_actions/actions"; // Certifique-se de que a importação está correta
+
+ 
 
 type UniqueAction = {
   acao: string;
   count: number;
 };
+
+
+interface ActivePoint {
+  latitude: number;
+  longitude: number;
+  name: string;
+  acao: string;
+  description?: string;
+  time?: string;
+}
+
+
 
 type ShapeContextType = {
   availableShapes: GeometryData[];
@@ -16,28 +30,36 @@ type ShapeContextType = {
   addShape: (shape: GeometryData) => void;
   removeShape: (shapeId: string) => void;
   setAvailableShapes: React.Dispatch<React.SetStateAction<GeometryData[]>>;
+
   selectedFeature: Feature | null;
   setSelectedFeature: React.Dispatch<React.SetStateAction<Feature | null>>;
+
   loading: boolean;
+  
   uniqueActions: UniqueAction[];
   setUniqueActions: React.Dispatch<React.SetStateAction<UniqueAction[]>>;
-  activePoints: any[];
-  addPoints: (points: any[]) => void;
+  activePoints: ActivePoint[];
+  addPoints: (points: ActivePoint[]) => void;
   removePoints: (action: string) => void;
 };
 
 const ShapeContext = createContext<ShapeContextType | undefined>(undefined);
 
-export const ShapeProvider = ({ children }: { children: ReactNode }) => {
+export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
   const fetchedShapes = useFetchGeometryData();
+
   const [availableShapes, setAvailableShapes] = useState<GeometryData[]>([]);
   const [activeShapes, setActiveShapes] = useState<GeometryData[]>([]);
+
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Novos estados
+  // PONTOS DE AÇÕES
   const [uniqueActions, setUniqueActions] = useState<UniqueAction[]>([]);
-  const [activePoints, setActivePoints] = useState<any[]>([]);
+  const [activePoints, setActivePoints] = useState<ActivePoint[]>([]);
+
+
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch Shapes
   useEffect(() => {
@@ -52,12 +74,13 @@ export const ShapeProvider = ({ children }: { children: ReactNode }) => {
     const fetchUniqueActions = async () => {
       try {
         const actions = await GetUniqueActions();
-        setUniqueActions(actions); // Atualiza o estado com as ações únicas
-        console.log("Unique Actions fetched:", actions);
-      } catch (error) {
-        console.error("Error fetching unique actions:", error);
+        setUniqueActions(actions);
+      } catch (err) {
+        console.error("Error fetching unique actions:", err);
+        setError("Failed to fetch unique actions. Please try again.");
       }
     };
+
 
     fetchUniqueActions();
   }, []);
@@ -70,7 +93,7 @@ export const ShapeProvider = ({ children }: { children: ReactNode }) => {
     setActiveShapes((prev) => prev.filter((shape) => shape.id !== shapeId));
   };
 
-  const addPoints = (points: any[]) => {
+  const addPoints = (points: ActivePoint[]) => {
     setActivePoints((prev) => [...prev, ...points]);
   };
 
