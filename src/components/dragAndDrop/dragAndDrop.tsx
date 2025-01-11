@@ -1,3 +1,5 @@
+'use client'
+
 import { useReducer, useCallback } from "react";
 import { FileText, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

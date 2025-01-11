@@ -124,7 +124,7 @@ export async function GetUniqueActions() {
     });
 
     if (!allActions || allActions.length === 0) {
-      throw new Error("No actions found");
+      return [];
     }
 
     // Agrupa as ações únicas e conta as ocorrências
@@ -194,6 +194,7 @@ export async function getInitialGeometry() {
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
 // console.log(InitialGeometry.map((item: any) => item.id));
+console.log(InitialGeometry);
       return InitialGeometry;
   } catch (error) {
       console.error('Error getting initial geometry', error);

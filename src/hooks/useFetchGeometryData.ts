@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getGeoEntities } from "@/app/_actions/actions";
+import { getInitialGeometry } from "@/app/_actions/actions";
 import { GeometryData, Feature, Geometry } from "@/@types/geomtry";
 
 export const useFetchGeometryData = () => {
