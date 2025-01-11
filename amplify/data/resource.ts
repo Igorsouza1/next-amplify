@@ -1,23 +1,32 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
-  GeoEntity: a.model({
+
+  InitialGeometry: a.model({
+    PK: a.string(), // Primary Key
+    SK: a.string(), // Sort Key
+    type: a.string(),
+    category: a.enum( ["Desmatamento", "Fogo", "Atividades", "Propriedades", "Outros"]),
+    name: a.string(),
+    color: a.string(),
+    features: a.json(), // JSON para dados GeoJSON
+  }).authorization(allow => [allow.guest().to(["read", "create", "delete", "update"]), allow.owner().to(["read", "update", "delete", "create"])]),
+
+
+  AcoesRDP: a.model({
     PK: a.string(),
     SK: a.string(),
-    Geometry: a.json(),
-    Name: a.string(),
-    Type: a.string(),
-    Features: a.json(),
-    Municipio: a.string(),
-    AreaHa: a.string(),
-    DataDetec: a.string(),
-    VPressao: a.string(),
-    Cod_Imovel: a.string(),
-    Num_Area: a.string(),
-    DescSeg: a.string(),
-    TipoPNV: a.string(),
-  }).authorization(allow => [allow.guest().to(["read"]), allow.owner()]),
-}).authorization(allow => [allow.guest().to(["read"]), allow.owner()]);
+    name: a.string(),
+    latitude: a.float(),
+    longitude: a.float(),
+    elevation: a.float(),
+    time: a.string(),
+    description: a.string(),
+    mes: a.string(),
+    acao: a.string(),
+
+  }).authorization(allow => [allow.guest().to(["read", "create", "delete", "update"]), allow.owner().to(["read", "update", "delete", "create"])]),
+}).authorization(allow => [allow.guest().to(["read", "create", "delete", "update"]), allow.owner().to(["read", "update", "delete", "create"])])
 
 export type Schema = ClientSchema<typeof schema>;
 

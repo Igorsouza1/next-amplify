@@ -1,13 +1,48 @@
+/**
+ * Representa uma coordenada no formato GeoJSON.
+ * [longitude, latitude]
+ */
 export type Coordinate = [number, number];
-export type LinearRing = Coordinate[];
-export type PolygonType = LinearRing[];
-export type MultiPolygon = PolygonType[];
 
+/**
+ * Representa um anel linear (LinearRing), usado em polígonos.
+ * É um array de coordenadas.
+ */
+export type LinearRing = Coordinate[];
+
+/**
+ * Representa um polígono no formato GeoJSON.
+ * É um array de LinearRings.
+ */
+export type Polygon = LinearRing[];
+
+/**
+ * Representa um MultiPolygon no formato GeoJSON.
+ * É um array de polígonos.
+ */
+export type MultiPolygon = Polygon[];
+
+/**
+ * Define os tipos válidos de geometria no GeoJSON.
+ */
+export type GeometryType = "Point" | "LineString" | "Polygon" | "MultiPoint" | "MultiLineString" | "MultiPolygon";
+
+/**
+ * Representa uma geometria no formato GeoJSON.
+ */
 export interface Geometry {
-  type: string;
-  coordinates: PolygonType | MultiPolygon;
+  type: GeometryType;
+  coordinates:
+    | Coordinate // Point
+    | Coordinate[] // LineString, MultiPoint
+    | LinearRing // Polygon (exterior)
+    | Polygon // Polygon (com buracos)
+    | MultiPolygon; // MultiPolygon
 }
 
+/**
+ * Representa uma Feature no formato GeoJSON.
+ */
 export interface Feature {
   id: string;
   type: "Feature";
@@ -26,37 +61,28 @@ export interface Feature {
     fonte?: string;
     bioma?: string;
     municipio?: string;
-    area_ha?: number;
+    areaha?: number;
     datadetec?: string;
     sub_area?: number;
-    
-    // Novas propriedades de desmatamento, propriedades e estradas
-    Municipio?: string;
-    AreaHa?: number;
-    DataDetec?: string;
-    VPressao?: string;
-    Cod_Imovel?: string;
-    Num_Area?: number;
-    DescSeg?: string | null;
-    TipoPNV?: string | null;
-  };
+  } & Record<string, unknown>;
   geometry: Geometry;
 }
 
+export interface CRS {
+  type: string;
+  properties: {
+    name: string;
+  };
+}
+
+/**
+ * Representa um conjunto de Features com metadados adicionais.
+ */
 export interface GeometryData {
   id: string;
   name: string;
-  type: string;
-  size?: string;
-  color?: string;
-  geometry: Geometry;
+  color: string;
+  category: "Atividades" | "Desmatamento" | "Fogo" | "Outros" | "Propriedades";
   features: Feature[];
-  municipio?: string;
-  areaHa?: number;
-  dataDetec?: string;
-  vPressao?: string;
-  codImovel?: string;
-  numArea?: number;
-  descSeg?: string | null;
-  tipoPNV?: string | null;
+  crs?: CRS;
 }
