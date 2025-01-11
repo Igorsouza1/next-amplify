@@ -23,7 +23,13 @@ interface ActivePoint {
 }
 
 
-
+/**
+ * Define o formato do contexto ShapeContext.
+ * - Gerencia formas geométricas (`availableShapes` e `activeShapes`).
+ * - Controla pontos ativos no mapa (`activePoints`).
+ * - Armazena ações únicas relacionadas aos pontos (`uniqueActions`).
+ * - Permite adicionar, remover e selecionar formas e pontos.
+ */
 type ShapeContextType = {
   availableShapes: GeometryData[];
   activeShapes: GeometryData[];
@@ -45,23 +51,37 @@ type ShapeContextType = {
 
 const ShapeContext = createContext<ShapeContextType | undefined>(undefined);
 
+
+
+/**
+ * Componente `ShapeProvider` que fornece o contexto para gerenciar dados geoespaciais e pontos ativos.
+ * - Carrega formas geométricas e ações únicas no início.
+ * - Exponibiliza funções para manipular esses dados.
+ * @param children - Componentes filhos que terão acesso ao contexto.
+ */
 export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
+
   const fetchedShapes = useFetchGeometryData();
 
   const [availableShapes, setAvailableShapes] = useState<GeometryData[]>([]);
   const [activeShapes, setActiveShapes] = useState<GeometryData[]>([]);
 
-  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  // PONTOS DE AÇÕES
+  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  
   const [uniqueActions, setUniqueActions] = useState<UniqueAction[]>([]);
   const [activePoints, setActivePoints] = useState<ActivePoint[]>([]);
 
 
-  const [error, setError] = useState<string | null>(null);
-
-  // Fetch Shapes
+   /**
+   * Busca formas geométricas no carregamento inicial usando `useFetchGeometryData`.
+   * Atualiza o estado `availableShapes` e define `loading` como falso.
+   */
   useEffect(() => {
     if (fetchedShapes.length > 0) {
       setAvailableShapes(fetchedShapes);
@@ -69,7 +89,13 @@ export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
     }
   }, [fetchedShapes]);
 
-  // Fetch Unique Actions
+
+
+  /**
+   * Busca ações únicas relacionadas aos pontos.
+   * - Atualiza o estado `uniqueActions` com os dados retornados.
+   * - Define um erro caso a busca falhe.
+   */
   useEffect(() => {
     const fetchUniqueActions = async () => {
       try {
@@ -81,26 +107,29 @@ export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
       }
     };
 
-
     fetchUniqueActions();
   }, []);
 
+
+// SHAPES
   const addShape = (shape: GeometryData) => {
     setActiveShapes((prev) => [...prev, shape]);
   };
-
   const removeShape = (shapeId: string) => {
     setActiveShapes((prev) => prev.filter((shape) => shape.id !== shapeId));
   };
 
+
+// POINTS
   const addPoints = (points: ActivePoint[]) => {
     setActivePoints((prev) => [...prev, ...points]);
   };
-
   const removePoints = (action: string) => {
     setActivePoints((prev) => prev.filter((point) => point.acao !== action));
   };
 
+
+  
   return (
     <ShapeContext.Provider
       value={{
@@ -124,8 +153,15 @@ export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
   );
 };
 
+
+
+/**
+ * Hook para consumir o contexto `ShapeContext`.
+ * Certifica-se de que o contexto está sendo usado dentro de um `ShapeProvider`.
+ * @throws Erro se usado fora do `ShapeProvider`.
+ */
 export const useShapeContext = () => {
   const context = useContext(ShapeContext);
   if (!context) throw new Error("useShapeContext must be used within a ShapeProvider");
-  return context;
-};
+  return context
+}
