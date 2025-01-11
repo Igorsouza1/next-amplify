@@ -191,13 +191,16 @@ export async function getInitialGeometry() {
           selectionSet: ['id', 'name', 'features', 'color'],
           authMode: 'userPool'
       });
-console.log(InitialGeometry);
+      // SE FOR AMBIENTE DE DESENVOLVIMENTO CONSOLE.LOG
+      if(process.env.NODE_ENV === 'development'){
+        console.log(InitialGeometry);
+      }
       return InitialGeometry;
   } catch (error) {
       console.error('Error getting initial geometry', error);
   }
 }
-  
+
 
 
 export async function deleteShapeAction(id: string) {

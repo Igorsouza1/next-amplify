@@ -13,9 +13,9 @@ export const useFetchGeometryData = () => {
   const [error, setError] = useState<string | null>(null);
 
 
-/**
-   * Função para processar a propriedade `features` e garantir que seja do tipo `Feature[]`.
-   * @param features - Dados crus da propriedade `features`.
+ /**
+   * Processa a propriedade `features` e retorna um array de `Feature[]`.
+   * @param features - Dados crus da propriedade `features` no formato `RawFeatures`.
    * @returns Um array de `Feature[]`.
    */
   const parseFeatures = (features: RAWFeature): Feature[] => {
@@ -39,6 +39,8 @@ export const useFetchGeometryData = () => {
 
     try {
       const data = await getInitialGeometry();
+
+      // Processa os dados e garante que estejam no formato GeometryData[]
       const parsedData: GeometryData[] = data?.map((item) => ({
         id: item.id,
         name: item.name ?? "",
