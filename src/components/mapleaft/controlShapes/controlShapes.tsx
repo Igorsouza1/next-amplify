@@ -40,8 +40,20 @@ export default function ExpandableControlShapes() {
 
 
   useEffect(() => {
-    setSelectedShapes(activeShapes.map((shape) => shape.id));
-  }, [activeShapes]);
+    if (!loading) {
+      setSelectedShapes(activeShapes.map((shape) => shape.id));
+    }
+  }, [activeShapes, loading]);
+
+
+  // Atualiza o componente para refletir mudanças em uniqueActions e availableShapes
+  useEffect(() => {
+    if (!loading) {
+      console.log("Dados carregados:");
+      console.log("Shapes Disponíveis:", availableShapes);
+      console.log("Ações Únicas:", uniqueActions);
+    }
+  }, [availableShapes, uniqueActions, loading]);
 
   
 
@@ -152,7 +164,7 @@ export default function ExpandableControlShapes() {
               <Checkbox
                 id={acao}
                 checked={selectedActions.includes(acao)}
-                disabled={loadingAction === acao} // Desativa o checkbox enquanto carrega
+                disabled={loadingAction === acao}
                 onCheckedChange={() => handleActionCheckboxChange(acao)}
               />
               <Label htmlFor={acao}>{`${acao} (${count})`}</Label>

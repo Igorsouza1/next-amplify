@@ -3,8 +3,7 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { GeometryData, Feature } from "@/@types/geomtry";
 import { useFetchGeometryData } from "@/hooks/useFetchGeometryData";
-import { GetUniqueActions } from "@/app/_actions/actions"; // Certifique-se de que a importação está correta
-
+import { useFetchUniqueActions } from '@/hooks/useFetchUniqueActions';
  
 
 type UniqueAction = {
@@ -61,7 +60,7 @@ const ShapeContext = createContext<ShapeContextType | undefined>(undefined);
  */
 export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
 
-  const { geometryData } = useFetchGeometryData();
+  const { geometryData, loading: geometryLoading } = useFetchGeometryData();
 
   const [availableShapes, setAvailableShapes] = useState<GeometryData[]>([]);
   const [activeShapes, setActiveShapes] = useState<GeometryData[]>([]);
@@ -70,13 +69,13 @@ export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
 
 
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  
-  const [uniqueActions, setUniqueActions] = useState<UniqueAction[]>([]);
+  const { uniqueActions, loading: uniqueActionsLoading } = useFetchUniqueActions();
+  const [ AlluniqueActions, setUniqueActions] = useState<UniqueAction[]>([]);
   const [activePoints, setActivePoints] = useState<ActivePoint[]>([]);
 
+  const loading = geometryLoading || uniqueActionsLoading;
 
    /**
    * Busca formas geométricas no carregamento inicial usando `useFetchGeometryData`.
@@ -85,7 +84,6 @@ export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (geometryData.length > 0) {
       setAvailableShapes(geometryData);
-      setLoading(false);
     }
   }, [geometryData]);
 
@@ -97,17 +95,9 @@ export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
    * - Define um erro caso a busca falhe.
    */
   useEffect(() => {
-    const fetchUniqueActions = async () => {
-      try {
-        const actions = await GetUniqueActions();
-        setUniqueActions(actions);
-      } catch (err) {
-        console.error("Error fetching unique actions:", err);
-        setError("Failed to fetch unique actions. Please try again.");
+      if(uniqueActions.length > 0) {
+        setUniqueActions(uniqueActions);
       }
-    };
-
-    fetchUniqueActions();
   }, []);
 
 

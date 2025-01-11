@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getInitialGeometry } from "@/app/_actions/actions";
 import { GeometryData, Feature } from "@/@types/geomtry";
+import { fetchAuthSession } from 'aws-amplify/auth';
 
 
 // Feature crua pode ser uma string ou um array de `Feature`.
