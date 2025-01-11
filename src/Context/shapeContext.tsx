@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { GeometryData, Feature, Coordinate } from "@/@types/geomtry";
+import { GeometryData, Feature } from "@/@types/geomtry";
 import { useFetchGeometryData } from "@/hooks/useFetchGeometryData";
 import { GetUniqueActions } from "@/app/_actions/actions"; // Certifique-se de que a importação está correta
 
@@ -61,7 +61,7 @@ const ShapeContext = createContext<ShapeContextType | undefined>(undefined);
  */
 export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
 
-  const fetchedShapes = useFetchGeometryData();
+  const { geometryData } = useFetchGeometryData();
 
   const [availableShapes, setAvailableShapes] = useState<GeometryData[]>([]);
   const [activeShapes, setActiveShapes] = useState<GeometryData[]>([]);
@@ -83,11 +83,11 @@ export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
    * Atualiza o estado `availableShapes` e define `loading` como falso.
    */
   useEffect(() => {
-    if (fetchedShapes.length > 0) {
-      setAvailableShapes(fetchedShapes);
+    if (geometryData.length > 0) {
+      setAvailableShapes(geometryData);
       setLoading(false);
     }
-  }, [fetchedShapes]);
+  }, [geometryData]);
 
 
 
@@ -129,7 +129,7 @@ export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
   };
 
 
-  
+
   return (
     <ShapeContext.Provider
       value={{

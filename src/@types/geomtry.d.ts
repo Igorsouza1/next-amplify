@@ -82,7 +82,7 @@ export interface GeometryData {
   id: string;
   name: string;
   color: string;
-  category: "Atividades" | "Desmatamento" | "Fogo" | "Outros" | "Propriedades";
+  category?: "Atividades" | "Desmatamento" | "Fogo" | "Outros" | "Propriedades";
   features: Feature[];
   crs?: CRS;
 }

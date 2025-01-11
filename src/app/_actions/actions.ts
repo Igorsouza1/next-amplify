@@ -185,23 +185,19 @@ export async function GetPointsByAction(acao: string) {
 
 
 // PEGAR AS GEOMETRIAS INICIAIS
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export async function getInitialGeometry() {
   try {
       const { data: InitialGeometry } = await cookieBasedClient.models.InitialGeometry.list({
           selectionSet: ['id', 'name', 'features', 'color'],
           authMode: 'userPool'
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-// console.log(InitialGeometry.map((item: any) => item.id));
 console.log(InitialGeometry);
       return InitialGeometry;
   } catch (error) {
       console.error('Error getting initial geometry', error);
   }
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
-
+  
 
 
 export async function deleteShapeAction(id: string) {
