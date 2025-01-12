@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Auth from "@/components/auth/auth";
-import NavBar from "@/components/Navbar/Navbar";
-import { isAuthenticated } from "@/utils/amplify-utils";
 import { Toaster } from "@/components/ui/toaster";
-import { ShapeProvider } from '@/Context/shapeContext';
+
 
 
 export const metadata: Metadata = {
@@ -20,12 +18,9 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        {/* <NavBar isSignedIn={await isAuthenticated()} /> */}
         <Auth>
           
-          <ShapeProvider>
             {children}
-          </ShapeProvider>
           <Toaster />
 
         </Auth>

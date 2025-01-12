@@ -54,6 +54,10 @@ export default function Login() {
         router.push("/map");
       }
     } catch (error) {
+      if(error === "UserAlreadyAuthenticatedException") {
+        return router.push("/map");
+      }
+
       toast({
         variant: "destructive",
         duration: 3000,

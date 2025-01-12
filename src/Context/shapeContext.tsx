@@ -4,6 +4,7 @@ import { createContext, useState, useContext, ReactNode, useEffect } from "react
 import { GeometryData, Feature } from "@/@types/geomtry";
 import { useFetchGeometryData } from "@/hooks/useFetchGeometryData";
 import { useFetchUniqueActions } from '@/hooks/useFetchUniqueActions';
+
  
 
 type UniqueAction = {
@@ -92,7 +93,6 @@ export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
   /**
    * Busca ações únicas relacionadas aos pontos.
    * - Atualiza o estado `uniqueActions` com os dados retornados.
-   * - Define um erro caso a busca falhe.
    */
   useEffect(() => {
       if(uniqueActions.length > 0) {
