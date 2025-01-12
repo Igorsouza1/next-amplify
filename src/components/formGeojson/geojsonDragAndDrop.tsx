@@ -3,7 +3,6 @@
 import { useState, useCallback } from 'react';
 import { FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { saveGeoJsonData } from '@/app/_actions/actions';
 import { Button } from '@/components/ui/button';
 
 export default function DragAndDrop() {
@@ -56,7 +55,6 @@ export default function DragAndDrop() {
   const handleSave = async () => {
     if (geoJsonData && fileName) {
       setIsSubmitting(true);
-      await saveGeoJsonData(geoJsonData, fileName);
       alert('GeoJSON salvo com sucesso!');
       setIsSubmitting(false);
     } else {
