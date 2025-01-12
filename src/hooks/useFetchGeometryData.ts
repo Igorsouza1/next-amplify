@@ -60,7 +60,7 @@ export const useFetchGeometryData = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [geometryData]);
 
   return { geometryData, loading, error };
 };
