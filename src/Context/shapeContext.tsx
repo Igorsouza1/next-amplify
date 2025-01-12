@@ -98,7 +98,7 @@ export const ShapeProvider =  ({ children }: { children: ReactNode }) => {
       if(uniqueActions.length > 0) {
         setUniqueActions(uniqueActions);
       }
-  }, []);
+    }, [uniqueActions]);
 
 
 // SHAPES
